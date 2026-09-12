@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>日常英会話穴埋めトレーニング (SRS忘却曲線対応)</title>
+    <title>日常英会話穴埋めトレーニング</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts Inter & Noto Sans JP -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <!-- SheetJS (xlsx) for Direct Excel (.xlsx/.xls) & CSV Auto-Encoding Parsing -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
     <style>
@@ -59,6 +63,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
 
+    <!-- Header Navigation -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
         <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-3 cursor-pointer" onclick="showView('title')">
@@ -71,6 +76,7 @@
                 </div>
             </div>
 
+            <!-- View Navigation Buttons -->
             <div class="flex items-center space-x-1 bg-slate-100 p-1 rounded-xl text-xs font-semibold">
                 <button id="nav-btn-title" onclick="showView('title')" class="px-3 py-1.5 rounded-lg bg-white text-indigo-600 shadow-xs font-bold transition flex items-center gap-1">
                     <i data-lucide="home" class="w-3.5 h-3.5"></i>
@@ -78,8 +84,9 @@
                 </button>
                 <button id="nav-btn-manage" onclick="showView('manage')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center gap-1">
                     <i data-lucide="database" class="w-3.5 h-3.5"></i>
-                    <span>単語管理 / CSV</span>
+                    <span>単語管理 / バックアップ</span>
                 </button>
+                <!-- Voice Settings Button -->
                 <button onclick="openVoiceModal()" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 transition flex items-center gap-1 border border-transparent">
                     <i data-lucide="sliders" class="w-3.5 h-3.5 text-indigo-600"></i>
                     <span>音声設定</span>
@@ -88,10 +95,12 @@
         </div>
     </header>
 
+    <!-- Main Container -->
     <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-6">
 
-        <!-- Title View -->
+        <!-- 1. TITLE VIEW (Dashboard) -->
         <div id="view-title" class="space-y-6">
+            <!-- Hero Welcome Card -->
             <div class="bg-gradient-to-br from-indigo-900 via-indigo-800 to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
                 <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
                 <div class="relative z-10 space-y-3">
@@ -108,6 +117,7 @@
                 </div>
             </div>
 
+            <!-- Learning Today Status Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex items-center space-x-4">
                     <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 border border-amber-100">
@@ -143,6 +153,7 @@
                 </div>
             </div>
 
+            <!-- Start Action Buttons -->
             <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
                 <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
                     <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
@@ -150,6 +161,7 @@
                         <span>学習を開始する</span>
                     </h3>
 
+                    <!-- Daily Limit Setting Dropdown -->
                     <div class="flex items-center space-x-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 text-xs">
                         <i data-lucide="target" class="w-4 h-4 text-indigo-600"></i>
                         <span class="font-bold text-slate-700">1日の最大出題数:</span>
@@ -185,8 +197,9 @@
             </div>
         </div>
 
-        <!-- Quiz View -->
+        <!-- 2. QUIZ VIEW (Interactive Session) -->
         <div id="view-quiz" class="space-y-4 hidden">
+            <!-- Progress Bar Card -->
             <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs flex items-center justify-between gap-4">
                 <div class="flex-1 space-y-1.5">
                     <div class="flex justify-between items-center text-xs font-bold">
@@ -198,12 +211,21 @@
                     </div>
                 </div>
 
-                <button onclick="confirmExitSession()" class="px-3 py-1.5 text-xs text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition font-semibold border border-slate-200">
-                    中断してタイトルへ
-                </button>
+                <div class="flex items-center space-x-2">
+                    <!-- Previous Card Button -->
+                    <button id="btn-prev-card" onclick="prevCard()" class="px-3 py-1.5 text-xs text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition font-semibold border border-slate-200 flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed">
+                        <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
+                        <span>前へ</span>
+                    </button>
+                    <button onclick="confirmExitSession()" class="px-3 py-1.5 text-xs text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition font-semibold border border-slate-200">
+                        中断
+                    </button>
+                </div>
             </div>
 
+            <!-- Question Card -->
             <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm space-y-5 relative overflow-hidden">
+                <!-- Top Badge & Speech -->
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                     <div class="flex items-center space-x-2">
                         <span id="card-id-badge" class="bg-slate-900 text-white text-xs font-extrabold px-2.5 py-1 rounded-lg">#1</span>
@@ -216,6 +238,7 @@
                     </button>
                 </div>
 
+                <!-- History Chart Area -->
                 <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-3 space-y-1.5">
                     <div class="flex items-center justify-between text-xs">
                         <span class="font-bold text-slate-600 flex items-center gap-1">
@@ -227,14 +250,20 @@
                     <div id="quiz-history-chart-area"></div>
                 </div>
 
+                <!-- English Blank Phrase Container with Inline Japanese Hint -->
                 <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-5 sm:p-6 space-y-2">
                     <span class="text-[11px] font-bold text-indigo-500 uppercase tracking-wider block">【問題】実践フレーズ（空欄補完）</span>
                     <div class="space-y-1">
-                        <p id="quiz-phrase-en" class="text-xl sm:text-2xl font-bold text-slate-800 leading-relaxed"></p>
-                        <p id="quiz-phrase-ja-inline" class="text-xs sm:text-sm font-semibold text-slate-500 italic"></p>
+                        <p id="quiz-phrase-en" class="text-xl sm:text-2xl font-bold text-slate-800 leading-relaxed">
+                            <!-- Dynamic Phrase with Blanks -->
+                        </p>
+                        <p id="quiz-phrase-ja-inline" class="text-xs sm:text-sm font-semibold text-slate-500 italic">
+                            <!-- Dynamic Japanese Translation -->
+                        </p>
                     </div>
                 </div>
 
+                <!-- Reveal Button (Before Answer) -->
                 <div id="quiz-reveal-control" class="pt-2 border-t border-slate-100">
                     <button onclick="revealAnswer()" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-extrabold text-base rounded-xl shadow-md shadow-indigo-200 transition flex items-center justify-center space-x-2">
                         <i data-lucide="eye" class="w-5 h-5"></i>
@@ -242,7 +271,9 @@
                     </button>
                 </div>
 
+                <!-- Answer & 4-Level SRS Classification Buttons (After Answer) -->
                 <div id="quiz-answer-area" class="hidden space-y-4 pt-2 border-t border-slate-100">
+                    <!-- 4-Level Classification Buttons -->
                     <div class="space-y-2">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">理解度を評価</span>
@@ -272,6 +303,7 @@
                         </div>
                     </div>
 
+                    <!-- Extra Sample Sentence & Full Phrase Reference -->
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-1.5 text-xs text-slate-700">
                         <div class="flex items-center gap-1 font-bold text-slate-800">
                             <i data-lucide="file-text" class="w-3.5 h-3.5 text-indigo-600"></i>
@@ -279,15 +311,17 @@
                         </div>
                         <p id="quiz-sample-en" class="font-medium text-slate-800 text-xs sm:text-sm pl-4 border-l-2 border-indigo-400"></p>
                         <p id="quiz-sample-ja" class="text-slate-500 pl-4"></p>
+                        <!-- Hidden phrase container for JS compatibility -->
                         <div id="quiz-full-phrase" class="hidden"></div>
                     </div>
                 </div>
             </div>
 
+            <!-- Footer Shortcut Helper -->
             <p class="text-center text-xs text-slate-400">キーボード操作: [Space]正解表示 / [1〜4]理解度評価</p>
         </div>
 
-        <!-- Complete View -->
+        <!-- 3. COMPLETED VIEW (Summary) -->
         <div id="view-complete" class="bg-white rounded-2xl border border-slate-200 p-8 text-center shadow-sm space-y-6 hidden">
             <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto shadow-md shadow-emerald-50">
                 <i data-lucide="trophy" class="w-8 h-8"></i>
@@ -315,19 +349,31 @@
             </button>
         </div>
 
-        <!-- Manage View -->
+        <!-- 4. MANAGE & CSV VIEW -->
         <div id="view-manage" class="space-y-6 hidden">
+            <!-- Top Controls -->
             <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-wrap items-center justify-between gap-3">
                 <div>
-                    <h3 class="text-base font-bold text-slate-900">単語データ管理 & CSVインポート/エクスポート</h3>
-                    <p class="text-xs text-slate-500">スプレッドシートのデータの追加・バックアップができます</p>
+                    <h3 class="text-base font-bold text-slate-900">単語データ管理 & 進捗バックアップ</h3>
+                    <p class="text-xs text-slate-500">学習記録を含む全データのバックアップ・復元・CSV取込ができます</p>
                 </div>
 
-                <div class="flex items-center gap-2">
+                <div class="flex flex-wrap items-center gap-2">
                     <button onclick="openImportModal()" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-xs">
                         <i data-lucide="upload" class="w-3.5 h-3.5"></i>
-                        <span>CSV/スプレッドシート取込</span>
+                        <span>CSV取込</span>
                     </button>
+                    <!-- Backup & Restore Buttons -->
+                    <button onclick="exportJSONBackup()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-xs" title="現在の進捗・学習履歴をすべてファイルに保存します">
+                        <i data-lucide="save" class="w-3.5 h-3.5"></i>
+                        <span>進捗バックアップ保存</span>
+                    </button>
+                    <button onclick="document.getElementById('backup-file-input').click()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition flex items-center gap-1.5" title="保存したバックアップファイルを読み込んで進捗を復元します">
+                        <i data-lucide="folder-open" class="w-3.5 h-3.5"></i>
+                        <span>バックアップ復元</span>
+                    </button>
+                    <input type="file" id="backup-file-input" accept=".json" onchange="importJSONBackup(event)" class="hidden">
+
                     <button onclick="exportCSV()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition flex items-center gap-1.5">
                         <i data-lucide="download" class="w-3.5 h-3.5"></i>
                         <span>CSV出力</span>
@@ -339,6 +385,7 @@
                 </div>
             </div>
 
+            <!-- List Search & Table -->
             <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs space-y-4">
                 <div class="relative max-w-sm">
                     <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
@@ -358,7 +405,9 @@
                                 <th class="p-3 text-right">操作</th>
                             </tr>
                         </thead>
-                        <tbody id="manage-table-body" class="divide-y divide-slate-100"></tbody>
+                        <tbody id="manage-table-body" class="divide-y divide-slate-100">
+                            <!-- Dynamic Table Rows -->
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -366,7 +415,7 @@
 
     </main>
 
-    <!-- Import Modal -->
+    <!-- CSV / Spreadsheet Import Modal -->
     <div id="import-modal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-xl border border-slate-200 space-y-4">
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
@@ -383,6 +432,7 @@
                 Excel (.xlsx/.xls) または CSV/TSV ファイルをドロップまたはファイル選択すると、1行目の見出しを自動除外して一括取り込みできます。
             </p>
 
+            <!-- File Drop Zone -->
             <div id="import-drop-zone" onclick="document.getElementById('file-input').click()" class="border-2 border-dashed border-slate-300 hover:border-indigo-500 bg-slate-50 hover:bg-indigo-50/50 rounded-xl p-5 text-center cursor-pointer transition flex flex-col items-center justify-center gap-2 group">
                 <div class="w-10 h-10 rounded-full bg-indigo-100 group-hover:bg-indigo-200 text-indigo-600 flex items-center justify-center transition shadow-2xs">
                     <i data-lucide="file-up" class="w-5 h-5"></i>
@@ -394,6 +444,7 @@
                 <input type="file" id="file-input" accept=".xlsx,.xls,.csv,.tsv,.txt" onchange="handleFileSelect(event)" class="hidden">
             </div>
 
+            <!-- File Info / Status display -->
             <div id="file-info-bar" class="hidden bg-indigo-50 border border-indigo-200 rounded-xl p-2.5 text-xs text-indigo-900 flex items-center justify-between">
                 <span class="font-bold truncate max-w-[80%]" id="file-info-name">ファイル名</span>
                 <button onclick="clearSelectedFile()" class="text-indigo-600 hover:text-indigo-800 font-bold text-[11px] underline">解除</button>
@@ -415,7 +466,7 @@
         </div>
     </div>
 
-    <!-- Voice Modal -->
+    <!-- Voice Settings Modal -->
     <div id="voice-modal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200 space-y-5">
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
@@ -430,6 +481,7 @@
                 </button>
             </div>
 
+            <!-- Speech Engine Selection -->
             <div class="space-y-2">
                 <label class="text-xs font-bold text-slate-700 block">音声生成エンジン</label>
                 <div class="grid grid-cols-2 gap-2">
@@ -445,6 +497,7 @@
                 </div>
             </div>
 
+            <!-- Voice Character Options for Gemini TTS -->
             <div id="gemini-voice-container" class="space-y-2">
                 <label class="text-xs font-bold text-slate-700 block">AIボイスキャラクター選択</label>
                 <select id="gemini-voice-select" onchange="saveVoiceSettings()" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-indigo-500">
@@ -460,11 +513,13 @@
                 </select>
             </div>
 
+            <!-- Browser Native Speech Voice Options -->
             <div id="browser-voice-container" class="space-y-2 hidden">
                 <label class="text-xs font-bold text-slate-700 block">端末の英語ボイス選択</label>
                 <select id="browser-voice-select" onchange="saveVoiceSettings()" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-indigo-500"></select>
             </div>
 
+            <!-- Test Speech Button -->
             <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
                 <button onclick="testSpeechSample()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-indigo-700 text-xs font-bold rounded-xl transition flex items-center gap-1.5">
                     <i data-lucide="play-circle" class="w-4 h-4 text-indigo-600"></i>
@@ -478,6 +533,7 @@
     </div>
 
     <script>
+        // Default Vocabulary Data
         const defaultVocabData = [
             { id: 1, word: "trail race", phraseEn: "run a trail race", phraseJa: "トレイルレースに出場する", sampleEn: "The mountain path for the trail race was quite steep.", sampleJa: "トレイルレースの山道はかなり険しかった。" },
             { id: 2, word: "manage to", phraseEn: "manage to finish", phraseJa: "なんとか完走する", sampleEn: "I managed to catch the last train home.", sampleJa: "終電になんとか間に合った。" },
@@ -538,7 +594,7 @@
         let activeSessionType = 'due';
         let dailyLimit = 20;
 
-        const STORAGE_KEY = 'trail_srs_vocab_db_v4';
+        const STORAGE_KEY = 'trail_srs_vocab_db_v5';
         const VOICE_SETTINGS_KEY = 'trail_srs_voice_config_v1';
         const DAILY_LIMIT_KEY = 'trail_srs_daily_limit_v1';
 
@@ -824,6 +880,73 @@
             updateTitleStats();
         }
 
+        // --- JSON BACKUP & RESTORE FUNCTIONS ---
+        function exportJSONBackup() {
+            if (!cardsDb || cardsDb.length === 0) {
+                alert("バックアップするデータがありません。");
+                return;
+            }
+
+            const backupObj = {
+                version: "1.0",
+                exportDate: new Date().toISOString(),
+                dailyLimit: dailyLimit,
+                cards: cardsDb
+            };
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupObj, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `daily_english_vocab_backup_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importJSONBackup(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const json = JSON.parse(e.target.result);
+                    let importedCards = null;
+
+                    if (Array.isArray(json)) {
+                        importedCards = json;
+                    } else if (json && Array.isArray(json.cards)) {
+                        importedCards = json.cards;
+                        if (json.dailyLimit) {
+                            dailyLimit = json.dailyLimit;
+                            localStorage.setItem(DAILY_LIMIT_KEY, dailyLimit.toString());
+                            const selectEl = document.getElementById('setting-daily-limit');
+                            if (selectEl) selectEl.value = dailyLimit;
+                        }
+                    }
+
+                    if (!importedCards || importedCards.length === 0) {
+                        throw new Error("Invalid backup format");
+                    }
+
+                    if (confirm(`バックアップファイルから ${importedCards.length} 件の単語データおよび学習履歴を読み込みます。現在の進捗データは上書きされますがよろしいですか？`)) {
+                        cardsDb = importedCards;
+                        cardsDb.forEach(c => {
+                            if (!c.history) c.history = [];
+                        });
+                        saveDatabase();
+                        renderManageTable();
+                        alert("学習進捗のバックアップ復元が完了しました！");
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("バックアップファイルの読み込みに失敗しました。正しいJSONファイルを選択してください。");
+                }
+                event.target.value = ''; // Reset file input
+            };
+            reader.readAsText(file);
+        }
+
         function updateCardSRS(card, grade) {
             const NOW = Date.now();
             const ONE_DAY_MS = 24 * 60 * 60 * 1000;
@@ -922,29 +1045,35 @@
             renderQuizCard();
         }
 
-        // Robust Tokenizer: Splits multi-word target into individual words and masks them separately inside phraseEn
         function generateBlankPhrase(phraseEn, word) {
             if (!phraseEn || !word) return phraseEn;
 
-            const cleanWord = word.replace(/[?.,!]/g, '').trim();
-            const targetWords = cleanWord.toLowerCase().split(/\s+/).filter(w => w.length > 0);
+            const cleanWord = word.trim();
+            const wordTokens = cleanWord.toLowerCase().split(/\s+/).filter(t => t.length > 0);
 
-            // Tokenize sentence preserving punctuation and spaces
             let tokens = phraseEn.match(/[\w'-]+|[^\w\s]|\s+/g) || [phraseEn];
             let resultHtml = '';
-            let blankIndex = 0;
+            let blankCounter = 0;
 
-            tokens.forEach(token => {
-                const cleanToken = token.replace(/[\W_]+/g, '').toLowerCase();
-                const isMatch = targetWords.some(tw => tw === cleanToken);
+            for (let i = 0; i < tokens.length; i++) {
+                let token = tokens[i];
+                let cleanToken = token.replace(/[\W_]+/g, '').toLowerCase();
 
-                if (isMatch && cleanToken.length > 0) {
-                    blankIndex++;
-                    resultHtml += `<span class="blank-box" id="active-blank-box-${blankIndex}" data-original="${token}">${'_'.repeat(Math.max(4, token.trim().length))}</span>`;
+                let matchedTokenIndex = -1;
+                for (let wIdx = 0; wIdx < wordTokens.length; wIdx++) {
+                    if (cleanToken === wordTokens[wIdx]) {
+                        matchedTokenIndex = wIdx;
+                        break;
+                    }
+                }
+
+                if (matchedTokenIndex !== -1 && cleanToken.length > 0) {
+                    blankCounter++;
+                    resultHtml += `<span class="blank-box" id="active-blank-box-${blankCounter}" data-original="${token}">${'_'.repeat(Math.max(4, token.trim().length))}</span>`;
                 } else {
                     resultHtml += token;
                 }
-            });
+            }
 
             return resultHtml;
         }
@@ -996,6 +1125,11 @@
             document.getElementById('quiz-answer-area').classList.add('hidden');
             document.getElementById('quiz-reveal-control').classList.remove('hidden');
 
+            const prevBtn = document.getElementById('btn-prev-card');
+            if (prevBtn) {
+                prevBtn.disabled = currentCardIndex === 0;
+            }
+
             if (sessionQueue.length === 0 || currentCardIndex >= sessionQueue.length) {
                 document.getElementById('summary-session-count').textContent = `${sessionQueue.length} カード`;
                 const masteredCount = cardsDb.filter(c => c.status === 'mastered').length;
@@ -1036,6 +1170,13 @@
             document.getElementById('quiz-sample-ja').textContent = card.sampleJa || '';
 
             lucide.createIcons();
+        }
+
+        function prevCard() {
+            if (currentCardIndex > 0) {
+                currentCardIndex--;
+                renderQuizCard();
+            }
         }
 
         function revealAnswer() {
