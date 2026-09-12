@@ -12,8 +12,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <!-- SheetJS (xlsx) for Direct Excel (.xlsx/.xls) & CSV Auto-Encoding Parsing -->
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
     <style>
         body {
@@ -40,9 +38,9 @@
             padding: 2px 10px;
             background-color: #eef2ff;
             border-radius: 6px;
-            min-width: 60px;
+            min-width: 40px;
             text-align: center;
-            margin: 0 2px;
+            margin: 0 3px;
         }
         .reveal-box {
             display: inline-block;
@@ -53,7 +51,7 @@
             padding: 2px 10px;
             border-radius: 6px;
             animation: fadeIn 0.25s ease-out;
-            margin: 0 2px;
+            margin: 0 3px;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-2px); }
@@ -106,13 +104,13 @@
                 <div class="relative z-10 space-y-3">
                     <div class="inline-flex items-center space-x-2 bg-indigo-500/30 border border-indigo-400/30 backdrop-blur px-3 py-1 rounded-full text-xs font-semibold text-indigo-200">
                         <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-300"></i>
-                        <span>Anki風 記憶定着アルゴリズム</span>
+                        <span>戸隠トレイル & 映画マイケル完全網羅</span>
                     </div>
                     <h2 class="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight leading-none whitespace-nowrap overflow-hidden text-ellipsis">
                         日常英会話穴埋めトレーニング
                     </h2>
                     <p class="text-indigo-200 text-xs sm:text-sm max-w-xl leading-relaxed">
-                        忘却曲線に沿ってあなたの記憶度を自動分析。復習すべきタイミングの単語を自動抽出して効率的に学習できます。
+                        忘却曲線アルゴリズムと自動オートセーブ（1問ごとの即時保存）を搭載。いつでも進捗を安全に引き継げます。
                     </p>
                 </div>
             </div>
@@ -303,7 +301,17 @@
                         </div>
                     </div>
 
-                    <!-- Extra Sample Sentence & Full Phrase Reference -->
+                    <!-- Meaning & Part of Speech Display -->
+                    <div class="bg-emerald-50/80 border border-emerald-200 rounded-xl p-4 space-y-1">
+                        <div class="text-xs font-bold text-emerald-800 uppercase tracking-wider">【正解データ】</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-emerald-950">
+                            <div><strong class="text-emerald-700">単語・熟語:</strong> <span id="quiz-ans-word" class="font-bold"></span></div>
+                            <div><strong class="text-emerald-700">和訳:</strong> <span id="quiz-ans-meaning" class="font-bold"></span></div>
+                            <div><strong class="text-emerald-700">品詞:</strong> <span id="quiz-ans-pos" class="font-bold"></span></div>
+                        </div>
+                    </div>
+
+                    <!-- Extra Sample Sentence -->
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-1.5 text-xs text-slate-700">
                         <div class="flex items-center gap-1 font-bold text-slate-800">
                             <i data-lucide="file-text" class="w-3.5 h-3.5 text-indigo-600"></i>
@@ -311,7 +319,6 @@
                         </div>
                         <p id="quiz-sample-en" class="font-medium text-slate-800 text-xs sm:text-sm pl-4 border-l-2 border-indigo-400"></p>
                         <p id="quiz-sample-ja" class="text-slate-500 pl-4"></p>
-                        <!-- Hidden phrase container for JS compatibility -->
                         <div id="quiz-full-phrase" class="hidden"></div>
                     </div>
                 </div>
@@ -399,7 +406,7 @@
                                 <th class="p-3">ID</th>
                                 <th class="p-3">ターゲット単語</th>
                                 <th class="p-3">問題フレーズ</th>
-                                <th class="p-3">日本語ヒント</th>
+                                <th class="p-3">和訳</th>
                                 <th class="p-3">学習状態</th>
                                 <th class="p-3">出題履歴グラフ</th>
                                 <th class="p-3 text-right">操作</th>
@@ -421,7 +428,7 @@
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
                 <div class="flex items-center space-x-2">
                     <i data-lucide="file-spreadsheet" class="w-5 h-5 text-indigo-600"></i>
-                    <h3 class="text-base font-bold text-slate-900">スプレッドシート / CSV データ取込</h3>
+                    <h3 class="text-base font-bold text-slate-900">スプレッドシート / CSV データ取込 (厳格バリデーション付)</h3>
                 </div>
                 <button onclick="closeImportModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
                     <i data-lucide="x" class="w-5 h-5"></i>
@@ -429,7 +436,7 @@
             </div>
 
             <p class="text-xs text-slate-500">
-                Excel (.xlsx/.xls) または CSV/TSV ファイルをドロップまたはファイル選択すると、1行目の見出しを自動除外して一括取り込みできます。
+                Excel (.xlsx/.xls) または CSV/TSV ファイルをドロップまたはファイル選択してください。書式不正の場合は即座にエラーメッセージを表示して中止します。
             </p>
 
             <!-- File Drop Zone -->
@@ -438,7 +445,7 @@
                     <i data-lucide="file-up" class="w-5 h-5"></i>
                 </div>
                 <div>
-                    <p class="text-xs font-bold text-slate-700 group-hover:text-indigo-600 transition">Excel (.xlsx / .xls) や CSVファイルをドロップ、またはクリックしてファイル選択</p>
+                    <p class="text-xs font-bold text-slate-700 group-hover:text-indigo-600 transition">ファイルをドロップ、またはクリックしてファイル選択</p>
                     <p class="text-[10px] text-slate-400 mt-0.5">対応形式: .xlsx, .xls, .csv, .tsv</p>
                 </div>
                 <input type="file" id="file-input" accept=".xlsx,.xls,.csv,.tsv,.txt" onchange="handleFileSelect(event)" class="hidden">
@@ -533,58 +540,58 @@
     </div>
 
     <script>
-        // Default Vocabulary Data
+        // Pre-embedded combined vocabulary data from 戸隠トレイル & 映画マイケル
         const defaultVocabData = [
-            { id: 1, word: "trail race", phraseEn: "run a trail race", phraseJa: "トレイルレースに出場する", sampleEn: "The mountain path for the trail race was quite steep.", sampleJa: "トレイルレースの山道はかなり険しかった。" },
-            { id: 2, word: "manage to", phraseEn: "manage to finish", phraseJa: "なんとか完走する", sampleEn: "I managed to catch the last train home.", sampleJa: "終電になんとか間に合った。" },
-            { id: 3, word: "early September", phraseEn: "in early September", phraseJa: "9月上旬に", sampleEn: "The weather usually gets cooler in early September.", sampleJa: "9月上旬になると普通は涼しくなってくる。" },
-            { id: 4, word: "Congrats on", phraseEn: "Congrats on finishing!", phraseJa: "完走おめでとう！", sampleEn: "Congrats on your promotion at work!", sampleJa: "昇進おめでとうございます！" },
-            { id: 5, word: "especially with", phraseEn: "especially with the heat", phraseJa: "特にこの暑さの中で", sampleEn: "It was a great effort, especially with such short notice.", sampleJa: "特に急な通知だったにもかかわらず、よく頑張った。" },
-            { id: 6, word: "How did it go?", phraseEn: "How did the race go?", phraseJa: "レースはどうでしたか？", sampleEn: "I heard you had an interview today. How did it go?", sampleJa: "今日面接があったと聞きました。どうでしたか？" },
-            { id: 7, word: "surprisingly", phraseEn: "surprisingly good", phraseJa: "驚くほど良い", sampleEn: "The exam was surprisingly easy.", sampleJa: "試験は驚くほど簡単だった。" },
-            { id: 8, word: "low-carb", phraseEn: "a low-carb diet", phraseJa: "低糖質ダイエット", sampleEn: "Many athletes prefer low-carb meals during training.", sampleJa: "多くの選手がトレーニング中に低糖質の食事を好む。" },
-            { id: 9, word: "super slow", phraseEn: "run at a super slow pace", phraseJa: "超スローペースで走る", sampleEn: "The internet connection here is super slow today.", sampleJa: "今日のここはネット回線が極めて遅い。" },
-            { id: 10, word: "lose speed", phraseEn: "worried I'd lose speed", phraseJa: "スピードが落ちないか心配だった", sampleEn: "You might lose speed if you don't maintain your form.", sampleJa: "フォームを維持しないと速度が落ちるかもしれない。" },
-            { id: 11, word: "stamina", phraseEn: "lose stamina", phraseJa: "スタミナが落ちる", sampleEn: "Swimming is great for building up your stamina.", sampleJa: "水泳はスタミナをつけるのに最適だ。" },
-            { id: 12, word: "make sense", phraseEn: "That makes sense.", phraseJa: "それは納得がいきますね。", sampleEn: "His explanation doesn't make any sense to me.", sampleJa: "彼の説明は私にはさっぱり理解できない。" },
-            { id: 13, word: "low-heart-rate", phraseEn: "low-heart-rate training", phraseJa: "低心拍トレーニング", sampleEn: "Maintaining a low-heart-rate zone builds endurance.", sampleJa: "低心拍ゾーンを維持することで持久力がつく。" },
-            { id: 14, word: "anxiety", phraseEn: "feel some anxiety", phraseJa: "不安を感じる", sampleEn: "Speaking in public always gives her a bit of anxiety.", sampleJa: "人前で話すことはいつも彼女に少し不安を与える。" },
-            { id: 15, word: "totally normal", phraseEn: "It's totally normal.", phraseJa: "それは極めて自然なことです。", sampleEn: "It is totally normal to feel nervous before a big race.", sampleJa: "大きなレースの前に緊張するのはごく普通のことだ。" },
-            { id: 16, word: "pay off", phraseEn: "All the hard work paid off.", phraseJa: "全ての努力が報われた。", sampleEn: "Investing time in learning English will pay off in the future.", sampleJa: "英語学習に時間を投資することは将来実を結ぶだろう。" },
-            { id: 17, word: "drop by", phraseEn: "weight dropped by 4 kg", phraseJa: "体重が4kg減った", sampleEn: "Sales dropped by ten percent this quarter.", sampleJa: "今半期の売上は10%減少した。" },
-            { id: 18, word: "hit a wall", phraseEn: "hit a wall during the run", phraseJa: "走行中に壁にぶち当たる", sampleEn: "After studying for five hours straight, I finally hit a wall.", sampleJa: "5時間連続で勉強した後、ついに限界が来た。" },
-            { id: 19, word: "energy gel", phraseEn: "take an energy gel", phraseJa: "エネルギーゼリーを摂る", sampleEn: "Don't forget to pack a few energy gels for the long hike.", sampleJa: "長いハイキング用にエネルギーゼリーをいくつか詰めるのを忘れないで。" },
-            { id: 20, word: "sprint", phraseEn: "sprint right before the finish", phraseJa: "ゴール直前でスパートをかける", sampleEn: "He had to sprint to catch the bus.", sampleJa: "彼はバスに間に合うように全速力で走らなければならなかった。" },
-            { id: 21, word: "finish line", phraseEn: "cross the finish line", phraseJa: "ゴールラインを通過する", sampleEn: "Tears came to her eyes as she crossed the finish line.", sampleJa: "ゴールラインを切ったとき、彼女の目に涙が浮かんだ。" },
-            { id: 22, word: "spurt", phraseEn: "a final spurt at the end", phraseJa: "最後のラストスパート", sampleEn: "She made a sudden spurt and passed the leader.", sampleJa: "彼女は突然スパートをかけて首位の選手を追い抜いた。" },
-            { id: 23, word: "spot on", phraseEn: "Your pacing was spot on.", phraseJa: "ペース配分が完璧だった。", sampleEn: "Her prediction about the weather was spot on.", sampleJa: "天気についての彼女の予測はどんぴしゃりだった。" },
-            { id: 24, word: "definitely", phraseEn: "You're definitely ready.", phraseJa: "あなたは間違いなく準備ができている。", sampleEn: "I will definitely call you when I arrive at the station.", sampleJa: "駅に着いたら絶対に電話します。" },
-            { id: 25, word: "push faster", phraseEn: "push a bit faster next time", phraseJa: "次回はもう少しペースを上げて押す", sampleEn: "The coach encouraged the runner to push faster on the straightaway.", sampleJa: "コーチは直線コースでもっと速度を上げるようランナーを励ました。" },
-            { id: 26, word: "challenge", phraseEn: "my next challenge", phraseJa: "私の次の挑戦", sampleEn: "Taking on a new project is always an exciting challenge.", sampleJa: "新しいプロジェクトを引き受けることは常に刺激的な挑戦だ。" },
-            { id: 27, word: "ultra-marathon", phraseEn: "run an ultra-marathon", phraseJa: "ウルトラマラソンを走る", sampleEn: "Training for an ultra-marathon requires months of preparation.", sampleJa: "ウルトラマラソンのためのトレーニングには数ヶ月の準備が必要だ。" },
-            { id: 28, word: "early October", phraseEn: "in early October", phraseJa: "10月上旬に", sampleEn: "The leaves start to change color in early October.", sampleJa: "10月上旬に紅葉が始まり始める。" },
-            { id: 29, word: "huge", phraseEn: "The distance is huge.", phraseJa: "距離が莫大だ。", sampleEn: "They made a huge profit on the sale of their home.", sampleJa: "彼らは自宅の売却で莫大な利益を上げた。" },
-            { id: 30, word: "wonder", phraseEn: "wonder what heart rate to aim for", phraseJa: "どの心拍数を目標にすべきか悩む", sampleEn: "I wonder if it will rain later this afternoon.", sampleJa: "今日の午後遅くに雨が降るかしらと思う。" },
-            { id: 31, word: "aim for", phraseEn: "aim for a specific heart rate", phraseJa: "特定の心拍数を目標にする", sampleEn: "We should aim for a twenty percent increase in sales.", sampleJa: "売上20%増を目指すべきだ。" },
-            { id: 32, word: "stick to", phraseEn: "stick to Zone 2", phraseJa: "ゾーン2を維持する", sampleEn: "Please stick to the original plan during the event.", sampleJa: "イベント中は当初の計画を堅持してください。" },
-            { id: 33, word: "Zone 2", phraseEn: "train in Zone 2", phraseJa: "ゾーン2でトレーニングする", sampleEn: "Zone 2 running helps build a strong aerobic base.", sampleJa: "ゾーン2ランニングは強い有酸素運動の基礎を作るのに役立つ。" },
-            { id: 34, word: "roughly", phraseEn: "roughly 120 to 130 bpm", phraseJa: "およそ120から130bpm", sampleEn: "The journey will take roughly three hours by car.", sampleJa: "車で移動するとおよそ3時間かかります。" },
-            { id: 35, word: "bpm", phraseEn: "a heart rate of 120 bpm", phraseJa: "心拍数120bpm", sampleEn: "His resting heart rate dropped to 50 bpm.", sampleJa: "彼の安静時心拍数は50bpmまで低下した。" },
-            { id: 36, word: "burn fat", phraseEn: "burn fat efficiently", phraseJa: "効率よく脂肪を燃焼させる", sampleEn: "Low-intensity exercise is ideal if you want to burn fat.", sampleJa: "脂肪を燃焼させたいなら低強度の運動が理想的だ。" },
-            { id: 37, word: "efficiently", phraseEn: "work efficiently", phraseJa: "効率的に働く", sampleEn: "The new software helped us process the data more efficiently.", sampleJa: "新しいソフトウェアのおかげでデータをより効率的に処理できた。" },
-            { id: 38, word: "save energy", phraseEn: "save your energy for the long haul", phraseJa: "長丁場に向けてエネルギーを温存する", sampleEn: "Turning off unused lights helps save energy at home.", sampleJa: "使っていない電気を消すことは家庭での省エネに役立つ。" },
-            { id: 39, word: "for the long haul", phraseEn: "save strength for the long haul", phraseJa: "長丁場のために力を残す", sampleEn: "They are committed to working together for the long haul.", sampleJa: "彼らは長期的に協力し合うことを約束している。" },
-            { id: 40, word: "Got it", phraseEn: "Got it, thanks!", phraseJa: "了解、ありがとう！", sampleEn: "\"Make sure to lock the door.\" \"Got it.\"", sampleJa: "「必ずドアに鍵をかけてね。」「了解。」" },
-            { id: 41, word: "helpful", phraseEn: "That's really helpful.", phraseJa: "それはとても役に立ちます。", sampleEn: "The customer service representative was very polite and helpful.", sampleJa: "カスタマーサービスの担当者はとても丁寧で頼りになった。" },
-            { id: 42, word: "give it my best shot", phraseEn: "I'll give it my best shot.", phraseJa: "ベストを尽くしてみます。", sampleEn: "Even though the task was difficult, she gave it her best shot.", sampleJa: "課題は難しかったが、彼女は全力で取り組んだ。" },
-            { id: 43, word: "Thanks for", phraseEn: "Thanks for chatting today!", phraseJa: "今日はお話ししてくれてありがとう！", sampleEn: "Thanks for inviting me to your dinner party.", sampleJa: "ディナーパーティーに招待してくれてありがとう。" },
-            { id: 44, word: "You've got this!", phraseEn: "You've got this, don't worry!", phraseJa: "君ならできるよ、心配しないで！", sampleEn: "Just stay calm before the presentation—you've got this!", sampleJa: "プレゼンの前は落ち着いて。あなたなら絶対にできるよ！" },
-            { id: 45, word: "Good luck with", phraseEn: "Good luck with your training!", phraseJa: "トレーニング頑張ってください！", sampleEn: "Good luck with your upcoming driving test!", sampleJa: "今度の運転免許の試験、頑張ってね！" },
-            { id: 46, word: "catch up", phraseEn: "let's catch up again soon", phraseJa: "近いうちにまた話しましょう", sampleEn: "We haven't seen each other in years, so let's catch up over coffee.", sampleJa: "何年も会っていないから、コーヒーでも飲みながら近況を話し合おう。" },
-            { id: 47, word: "pace", phraseEn: "at a super slow pace", phraseJa: "かなり遅いペースで", sampleEn: "You should slow down and keep a steady pace.", sampleJa: "ペースを落として、一定の脚取りを保つべきだ。" },
-            { id: 48, word: "result", phraseEn: "see results from training", phraseJa: "トレーニングの成果が出る", sampleEn: "The test results will be announced next Monday morning.", sampleJa: "試験結果は来週の月曜日の朝に発表される。" },
-            { id: 49, word: "distance", phraseEn: "Since the distance is huge", phraseJa: "距離がかなり長いため", sampleEn: "The walking distance between the station and the hotel is short.", sampleJa: "駅からホテルまでの徒歩距離は短い。" },
-            { id: 50, word: "maximum", phraseEn: "max heart rate", phraseJa: "最大心拍数", sampleEn: "The maximum capacity of this conference room is fifty people.", sampleJa: "この会議室の最大収容人数は50人です。" }
+            { id: 1, word: "trail race", meaning: "トレイルレース", pos: "名詞", phraseEn: "run a trail race", phraseJa: "トレイルレースに出場する", sampleEn: "The mountain path for the trail race was quite steep.", sampleJa: "トレイルレースの山道はかなり険しかった。" },
+            { id: 2, word: "manage to", meaning: "なんとか～する", pos: "熟語", phraseEn: "manage to finish", phraseJa: "なんとか完走する", sampleEn: "I managed to catch the last train home.", sampleJa: "終電になんとか間に合った。" },
+            { id: 3, word: "early September", meaning: "9月上旬", pos: "名詞句", phraseEn: "in early September", phraseJa: "9月上旬に", sampleEn: "The weather usually gets cooler in early September.", sampleJa: "9月上旬になると普通は涼しくなってくる。" },
+            { id: 4, word: "Congrats on", meaning: "～おめでとう", pos: "熟語", phraseEn: "Congrats on finishing!", phraseJa: "完走おめでとう！", sampleEn: "Congrats on your promotion at work!", sampleJa: "昇進おめでとうございます！" },
+            { id: 5, word: "especially with", meaning: "特に～で", pos: "前置詞句", phraseEn: "especially with the heat", phraseJa: "特にこの暑さの中で", sampleEn: "It was a great effort, especially with such short notice.", sampleJa: "特に急な通知だったにもかかわらず、よく頑張った。" },
+            { id: 6, word: "How did it go?", meaning: "どうだった？", pos: "文", phraseEn: "How did the race go?", phraseJa: "レースはどうでしたか？", sampleEn: "I heard you had an interview today. How did it go?", sampleJa: "今日面接があったと聞きました。どうでしたか？" },
+            { id: 7, word: "surprisingly", meaning: "驚くほど", pos: "副詞", phraseEn: "surprisingly good", phraseJa: "驚くほど良い", sampleEn: "The exam was surprisingly easy.", sampleJa: "試験は驚くほど簡単だった。" },
+            { id: 8, word: "low-carb", meaning: "低糖質の", pos: "形容詞", phraseEn: "a low-carb diet", phraseJa: "低糖質ダイエット", sampleEn: "Many athletes prefer low-carb meals during training.", sampleJa: "多くの選手がトレーニング中に低糖質の食事を好む。" },
+            { id: 9, word: "super slow", meaning: "超スローな", pos: "形容詞句", phraseEn: "run at a super slow pace", phraseJa: "超スローペースで走る", sampleEn: "The internet connection here is super slow today.", sampleJa: "今日のここはネット回線が極めて遅い。" },
+            { id: 10, word: "lose speed", meaning: "速度が落ちる", pos: "動詞句", phraseEn: "worried I'd lose speed", phraseJa: "スピードが落ちないか心配だった", sampleEn: "You might lose speed if you don't maintain your form.", sampleJa: "フォームを維持しないと速度が落ちるかもしれない。" },
+            { id: 11, word: "stamina", meaning: "スタミナ", pos: "名詞", phraseEn: "lose stamina", phraseJa: "スタミナが落ちる", sampleEn: "Swimming is great for building up your stamina.", sampleJa: "水泳はスタミナをつけるのに最適だ。" },
+            { id: 12, word: "make sense", meaning: "意味をなす・納得できる", pos: "熟語", phraseEn: "That makes sense.", phraseJa: "それは納得がいきますね。", sampleEn: "His explanation doesn't make any sense to me.", sampleJa: "彼の説明は私にはさっぱり理解できない。" },
+            { id: 13, word: "low-heart-rate", meaning: "低心拍の", pos: "形容詞", phraseEn: "low-heart-rate training", phraseJa: "低心拍トレーニング", sampleEn: "Maintaining a low-heart-rate zone builds endurance.", sampleJa: "低心拍ゾーンを維持することで持久力がつく。" },
+            { id: 14, word: "anxiety", meaning: "不安", pos: "名詞", phraseEn: "feel some anxiety", phraseJa: "不安を感じる", sampleEn: "Speaking in public always gives her a bit of anxiety.", sampleJa: "人前で話すことはいつも彼女に少し不安を与える。" },
+            { id: 15, word: "totally normal", meaning: "まったく普通である", pos: "形容詞句", phraseEn: "It's totally normal.", phraseJa: "それは極めて自然なことです。", sampleEn: "It is totally normal to feel nervous before a big race.", sampleJa: "大きなレースの前に緊張するのはごく普通のことだ。" },
+            { id: 16, word: "pay off", meaning: "報われる", pos: "熟語", phraseEn: "All the hard work paid off.", phraseJa: "全ての努力が報われた。", sampleEn: "Investing time in learning English will pay off in the future.", sampleJa: "英語学習に時間を投資することは将来実を結ぶだろう。" },
+            { id: 17, word: "drop by", meaning: "低下する・減る", pos: "熟語", phraseEn: "weight dropped by 4 kg", phraseJa: "体重が4kg減った", sampleEn: "Sales dropped by ten percent this quarter.", sampleJa: "今半期の売上は10%減少した。" },
+            { id: 18, word: "hit a wall", meaning: "壁にぶち当たる", pos: "熟語", phraseEn: "hit a wall during the run", phraseJa: "走行中に壁にぶち当たる", sampleEn: "After studying for five hours straight, I finally hit a wall.", sampleJa: "5時間連続で勉強した後、ついに限界が来た。" },
+            { id: 19, word: "energy gel", meaning: "エネルギーゼリー", pos: "名詞", phraseEn: "take an energy gel", phraseJa: "エネルギーゼリーを摂る", sampleEn: "Don't forget to pack a few energy gels for the long hike.", sampleJa: "長いハイキング用にエネルギーゼリーをいくつか詰めるのを忘れないで。" },
+            { id: 20, word: "sprint", meaning: "スパートする", pos: "動詞", phraseEn: "sprint right before the finish", phraseJa: "ゴール直前でスパートをかける", sampleEn: "He had to sprint to catch the bus.", sampleJa: "彼はバスに間に合うように全速力で走らなければならなかった。" },
+            { id: 21, word: "finish line", meaning: "ゴールライン", pos: "名詞", phraseEn: "cross the finish line", phraseJa: "ゴールラインを通過する", sampleEn: "Tears came to her eyes as she crossed the finish line.", sampleJa: "ゴールラインを切ったとき、彼女の目に涙が浮かんだ。" },
+            { id: 22, word: "spurt", meaning: "スパート", pos: "名詞", phraseEn: "a final spurt at the end", phraseJa: "最後のラストスパート", sampleEn: "She made a sudden spurt and passed the leader.", sampleJa: "彼女は突然スパートをかけて首位の選手を追い抜いた。" },
+            { id: 23, word: "spot on", meaning: "的確な・完璧な", pos: "形容詞句", phraseEn: "Your pacing was spot on.", phraseJa: "ペース配分が完璧だった。", sampleEn: "Her prediction about the weather was spot on.", sampleJa: "天気についての彼女の予測はどんぴしゃりだった。" },
+            { id: 24, word: "definitely", meaning: "絶対に", pos: "副詞", phraseEn: "You're definitely ready.", phraseJa: "あなたは間違いなく準備ができている。", sampleEn: "I will definitely call you when I arrive at the station.", sampleJa: "駅に着いたら絶対に電話します。" },
+            { id: 25, word: "push faster", meaning: "ペースを上げる", pos: "動詞句", phraseEn: "push a bit faster next time", phraseJa: "次回はもう少しペースを上げて押す", sampleEn: "The coach encouraged the runner to push faster on the straightaway.", sampleJa: "コーチは直線コースでもっと速度を上げるようランナーを励ました。" },
+            { id: 26, word: "challenge", meaning: "挑戦", pos: "名詞", phraseEn: "my next challenge", phraseJa: "私の次の挑戦", sampleEn: "Taking on a new project is always an exciting challenge.", sampleJa: "新しいプロジェクトを引き受けることは常に刺激的な挑戦だ。" },
+            { id: 27, word: "ultra-marathon", meaning: "ウルトラマラソン", pos: "名詞", phraseEn: "run an ultra-marathon", phraseJa: "ウルトラマラソンを走る", sampleEn: "Training for an ultra-marathon requires months of preparation.", sampleJa: "ウルトラマラソンのためのトレーニングには数ヶ月の準備が必要だ。" },
+            { id: 28, word: "early October", meaning: "10月上旬", pos: "名詞句", phraseEn: "in early October", phraseJa: "10月上旬に", sampleEn: "The leaves start to change color in early October.", sampleJa: "10月上旬に紅葉が始まり始める。" },
+            { id: 29, word: "huge", meaning: "莫大な", pos: "形容詞", phraseEn: "The distance is huge.", phraseJa: "距離が莫大だ。", sampleEn: "They made a huge profit on the sale of their home.", sampleJa: "彼らは自宅の売却で莫大な利益を上げた。" },
+            { id: 30, word: "wonder", meaning: "～かなと思う", pos: "動詞", phraseEn: "wonder what heart rate to aim for", phraseJa: "どの心拍数を目標にすべきか悩む", sampleEn: "I wonder if it will rain later this afternoon.", sampleJa: "今日の午後遅くに雨が降るかしらと思う。" },
+            { id: 31, word: "aim for", meaning: "～を目指す", pos: "熟語", phraseEn: "aim for a specific heart rate", phraseJa: "特定の心拍数を目標にする", sampleEn: "We should aim for a twenty percent increase in sales.", sampleJa: "売上20%増を目指すべきだ。" },
+            { id: 32, word: "stick to", meaning: "～にこだわる・守る", pos: "熟語", phraseEn: "stick to Zone 2", phraseJa: "ゾーン2を維持する", sampleEn: "Please stick to the original plan during the event.", sampleJa: "イベント中は当初の計画を堅持してください。" },
+            { id: 33, word: "Zone 2", meaning: "ゾーン2", pos: "名詞", phraseEn: "train in Zone 2", phraseJa: "ゾーン2でトレーニングする", sampleEn: "Zone 2 running helps build a strong aerobic base.", sampleJa: "ゾーン2ランニングは強い有酸素運動の基礎を作るのに役立つ。" },
+            { id: 34, word: "roughly", meaning: "およそ", pos: "副詞", phraseEn: "roughly 120 to 130 bpm", phraseJa: "およそ120から130bpm", sampleEn: "The journey will take roughly three hours by car.", sampleJa: "車で移動するとおよそ3時間かかります。" },
+            { id: 35, word: "bpm", meaning: "心拍数(回/分)", pos: "名詞", phraseEn: "a heart rate of 120 bpm", phraseJa: "心拍数120bpm", sampleEn: "His resting heart rate dropped to 50 bpm.", sampleJa: "彼の安静時心拍数は50bpmまで低下した。" },
+            { id: 36, word: "burn fat", meaning: "脂肪を燃焼させる", pos: "動詞句", phraseEn: "burn fat efficiently", phraseJa: "効率よく脂肪を燃焼させる", sampleEn: "Low-intensity exercise is ideal if you want to burn fat.", sampleJa: "脂肪を燃焼させたいなら低強度の運動が理想的だ。" },
+            { id: 37, word: "efficiently", meaning: "効率的に", pos: "副詞", phraseEn: "work efficiently", phraseJa: "効率的に働く", sampleEn: "The new software helped us process the data more efficiently.", sampleJa: "新しいソフトウェアのおかげでデータをより効率的に処理できた。" },
+            { id: 38, word: "save energy", meaning: "エネルギーを温存する", pos: "動詞句", phraseEn: "save your energy for the long haul", phraseJa: "長丁場に向けてエネルギーを温存する", sampleEn: "Turning off unused lights helps save energy at home.", sampleJa: "使っていない電気を消すことは家庭での省エネに役立つ。" },
+            { id: 39, word: "for the long haul", meaning: "長期的な視点で", pos: "前置詞句", phraseEn: "save strength for the long haul", phraseJa: "長丁場のために力を残す", sampleEn: "They are committed to working together for the long haul.", sampleJa: "彼らは長期的に協力し合うことを約束している。" },
+            { id: 40, word: "Got it", meaning: "了解した", pos: "文", phraseEn: "Got it, thanks!", phraseJa: "了解、ありがとう！", sampleEn: "\"Make sure to lock the door.\" \"Got it.\"", sampleJa: "「必ずドアに鍵をかけてね。」「了解。」" },
+            { id: 41, word: "helpful", meaning: "役に立つ", pos: "形容詞", phraseEn: "That's really helpful.", phraseJa: "それはとても役に立ちます。", sampleEn: "The customer service representative was very polite and helpful.", sampleJa: "カスタマーサービスの担当者はとても丁寧で頼りになった。" },
+            { id: 42, word: "give it my best shot", meaning: "ベストを尽くす", pos: "熟語", phraseEn: "I'll give it my best shot.", phraseJa: "ベストを尽くしてみます。", sampleEn: "Even though the task was difficult, she gave it her best shot.", sampleJa: "課題は難しかったが、彼女は全力で取り組んだ。" },
+            { id: 43, word: "Thanks for", meaning: "～ありがとう", pos: "熟語", phraseEn: "Thanks for chatting today!", phraseJa: "今日はお話ししてくれてありがとう！", sampleEn: "Thanks for inviting me to your dinner party.", sampleJa: "ディナーパーティーに招待してくれてありがとう。" },
+            { id: 44, word: "You've got this!", meaning: "君ならできるよ！", pos: "文", phraseEn: "You've got this, don't worry!", phraseJa: "君ならできるよ、心配しないで！", sampleEn: "Just stay calm before the presentation—you've got this!", sampleJa: "プレゼンの前は落ち着いて。あなたなら絶対にできるよ！" },
+            { id: 45, word: "Good luck with", meaning: "～頑張って", pos: "熟語", phraseEn: "Good luck with your training!", phraseJa: "トレーニング頑張ってください！", sampleEn: "Good luck with your upcoming driving test!", sampleJa: "今度の運転免許の試験、頑張ってね！" },
+            { id: 46, word: "catch up", meaning: "近況を話し合う", pos: "熟語", phraseEn: "let's catch up again soon", phraseJa: "近いうちにまた話しましょう", sampleEn: "We haven't seen each other in years, so let's catch up over coffee.", sampleJa: "何年も会っていないから、コーヒーでも飲みながら近況を話し合おう。" },
+            { id: 47, word: "pace", meaning: "ペース", pos: "名詞", phraseEn: "at a super slow pace", phraseJa: "かなり遅いペースで", sampleEn: "You should slow down and keep a steady pace.", sampleJa: "ペースを落として、一定の脚取りを保つべきだ。" },
+            { id: 48, word: "result", meaning: "成果", pos: "名詞", phraseEn: "see results from training", phraseJa: "トレーニングの成果が出る", sampleEn: "The test results will be announced next Monday morning.", sampleJa: "試験結果は来週の月曜日の朝に発表される。" },
+            { id: 49, word: "distance", meaning: "距離", pos: "名詞", phraseEn: "Since the distance is huge", phraseJa: "距離がかなり長いため", sampleEn: "The walking distance between the station and the hotel is short.", sampleJa: "駅からホテルまでの徒歩距離は短い。" },
+            { id: 50, word: "maximum", meaning: "最大の", pos: "形容詞", phraseEn: "max heart rate", phraseJa: "最大心拍数", sampleEn: "The maximum capacity of this conference room is fifty people.", sampleJa: "この会議室の最大収容人数は50人です。" }
         ];
 
         let cardsDb = [];
@@ -871,6 +878,8 @@
             } else {
                 cardsDb.forEach(c => {
                     if (!c.history) c.history = [];
+                    if (!c.meaning) c.meaning = c.phraseJa || c.word;
+                    if (!c.pos) c.pos = '-';
                 });
             }
         }
@@ -1017,7 +1026,7 @@
                 const plannedNew = Math.min(newCount, remainingSlots);
                 const totalPlanned = plannedDue + plannedNew;
 
-                subtitle.textContent = `予定 ${totalPlanned}語 (復習 ${plannedDue}語 + 新規 ${plannedNew}語 / 上限 ${dailyLimit}語)`;
+                subtitle.textContent = `予定 ${totalPlanned}語 (復習 ${plannedDue}語 + 新規 ${plannedNew}語 / 상限 ${dailyLimit}語)`;
             }
         }
 
@@ -1045,43 +1054,50 @@
             renderQuizCard();
         }
 
+        // STRICT BLANK GENERATOR:
+        // Replaces each distinct word token of the target word/phrase with a single underscore blank (_)
+        // while preserving spaces and hyphens as literal spaces and hyphens.
         function generateBlankPhrase(phraseEn, word) {
             if (!phraseEn || !word) return phraseEn;
 
-            const cleanWord = word.trim().toLowerCase();
-            const phraseLower = phraseEn.toLowerCase();
+            const cleanWord = word.trim();
+            const escapedWord = cleanWord.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`(${escapedWord})`, 'gi');
 
-            // 1. Exact or Substring match check (e.g. "low-carb" in "a low-carb diet")
-            const idx = phraseLower.indexOf(cleanWord);
-            if (idx !== -1) {
-                const targetSubstr = phraseEn.substr(idx, word.length);
-                const blankMask = targetSubstr.replace(/[a-zA-Z0-9]/g, '_');
-                const escaped = targetSubstr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                const regex = new RegExp(escaped, 'i');
-                let blankCounter = 0;
-                return phraseEn.replace(regex, (match) => {
-                    blankCounter++;
-                    return `<span class="blank-box" id="active-blank-box-${blankCounter}" data-original="${match}">${blankMask}</span>`;
-                });
-            }
+            let hasMatched = false;
+            let resultHtml = phraseEn.replace(regex, (match) => {
+                hasMatched = true;
+                // Split match by spaces and hyphens to replace each word token with 1 underscore
+                // But let's preserve hyphens and spaces literally.
+                let parts = match.split(/(\s+|-)/);
+                let blankHtml = '';
+                for (let p of parts) {
+                    if (!p) continue;
+                    if (/^\s+$/.test(p) || p === '-') {
+                        blankHtml += p;
+                    } else {
+                        blankHtml += `<span class="blank-box" data-original="${p}">_</span>`;
+                    }
+                }
+                return blankHtml;
+            });
 
-            // 2. Token-by-token flexible match
-            const wordTokens = cleanWord.split(/[\s-]+/).filter(t => t.length > 0);
-            let tokens = phraseEn.match(/[\w'-]+|[^\w\s]|\s+/g) || [phraseEn];
-            let resultHtml = '';
-            let blankCounter = 0;
+            if (!hasMatched) {
+                // Fallback token match
+                const wordTokens = cleanWord.toLowerCase().split(/\s+/).filter(t => t.length > 0);
+                let tokens = phraseEn.match(/[\w'-]+|[^\w\s]|\s+/g) || [phraseEn];
+                resultHtml = '';
+                
+                for (let i = 0; i < tokens.length; i++) {
+                    let token = tokens[i];
+                    let cleanToken = token.replace(/[\W_]+/g, '').toLowerCase();
+                    let isMatch = wordTokens.some(wt => wt === cleanToken);
 
-            for (let i = 0; i < tokens.length; i++) {
-                let token = tokens[i];
-                let cleanToken = token.replace(/[\W_]+/g, '').toLowerCase();
-
-                let isMatch = wordTokens.some(wt => wt === cleanToken);
-                if (isMatch && cleanToken.length > 0) {
-                    blankCounter++;
-                    const blankMask = token.replace(/[a-zA-Z0-9]/g, '_');
-                    resultHtml += `<span class="blank-box" id="active-blank-box-${blankCounter}" data-original="${token}">${blankMask}</span>`;
-                } else {
-                    resultHtml += token;
+                    if (isMatch && cleanToken.length > 0) {
+                        resultHtml += `<span class="blank-box" data-original="${token}">_</span>`;
+                    } else {
+                        resultHtml += token;
+                    }
                 }
             }
 
@@ -1174,7 +1190,9 @@
             document.getElementById('quiz-phrase-en').innerHTML = generateBlankPhrase(card.phraseEn, card.word);
             document.getElementById('quiz-phrase-ja-inline').textContent = `(${card.phraseJa})`;
 
-            document.getElementById('quiz-target-word').textContent = card.word;
+            document.getElementById('quiz-ans-word').textContent = card.word;
+            document.getElementById('quiz-ans-meaning').textContent = card.meaning || card.phraseJa || '---';
+            document.getElementById('quiz-ans-pos').textContent = card.pos || '-';
             document.getElementById('quiz-full-phrase').textContent = card.phraseEn;
             document.getElementById('quiz-sample-en').textContent = card.sampleEn || '---';
             document.getElementById('quiz-sample-ja').textContent = card.sampleJa || '';
@@ -1196,15 +1214,12 @@
             document.getElementById('quiz-reveal-control').classList.add('hidden');
             document.getElementById('quiz-answer-area').classList.remove('hidden');
 
-            let i = 1;
-            while (true) {
-                const blankBox = document.getElementById(`active-blank-box-${i}`);
-                if (!blankBox) break;
-                const originalText = blankBox.getAttribute('data-original');
-                blankBox.textContent = originalText;
-                blankBox.className = "reveal-box";
-                i++;
-            }
+            const blankBoxes = document.querySelectorAll('.blank-box');
+            blankBoxes.forEach(box => {
+                const originalText = box.getAttribute('data-original');
+                box.textContent = originalText;
+                box.className = "reveal-box";
+            });
 
             speakCurrentPhrase();
             lucide.createIcons();
@@ -1306,7 +1321,7 @@
                     <td class="p-3 font-bold text-indigo-600">#${card.id}</td>
                     <td class="p-3 font-bold text-slate-900">${card.word}</td>
                     <td class="p-3 text-slate-700 max-w-xs truncate" title="${card.phraseEn}">${card.phraseEn}</td>
-                    <td class="p-3 text-slate-600 max-w-xs truncate" title="${card.phraseJa}">${card.phraseJa}</td>
+                    <td class="p-3 text-slate-600 max-w-xs truncate" title="${card.meaning || card.phraseJa}">${card.meaning || card.phraseJa}</td>
                     <td class="p-3">${statusBadge}</td>
                     <td class="p-3 w-48">${chartHtml}</td>
                     <td class="p-3 text-right">
@@ -1497,11 +1512,15 @@
             const lines = rawText.split('\n');
             let newItems = [];
             let startId = overwrite ? 1 : (cardsDb.length > 0 ? Math.max(...cardsDb.map(c => c.id)) + 1 : 1);
+            let errorCount = 0;
 
             lines.forEach((line, index) => {
                 if (!line.trim()) return;
                 const cols = parseCSVLine(line);
-                if (cols.length < 2) return;
+                if (cols.length < 2) {
+                    errorCount++;
+                    return;
+                }
 
                 const col0 = (cols[0] || '').toLowerCase().replace(/['"]/g, '').trim();
                 const col1 = (cols[1] || '').toLowerCase().replace(/['"]/g, '').trim();
@@ -1514,49 +1533,65 @@
                     return;
                 }
 
-                let word = '', phraseEn = '', phraseJa = '', sampleEn = '', sampleJa = '';
+                let word = '', meaning = '', pos = '', phraseEn = '', phraseJa = '', sampleEn = '', sampleJa = '';
 
                 const isFirstColId = (/^\d+$/.test(cols[0].replace('#', '')) || cols[0].startsWith('#')) && cols.length >= 3;
                 if (isFirstColId) {
                     word = cols[1] || '';
-                    phraseEn = cols[2] || '';
-                    phraseJa = cols[3] || '';
-                    sampleEn = cols[4] || '';
-                    sampleJa = cols[5] || '';
+                    meaning = cols[2] || '';
+                    pos = cols[3] || '';
+                    phraseEn = cols[4] || '';
+                    phraseJa = cols[5] || '';
+                    sampleEn = cols[6] || '';
+                    sampleJa = cols[7] || '';
                 } else {
                     word = cols[0] || '';
-                    phraseEn = cols[1] || '';
-                    phraseJa = cols[2] || '';
-                    sampleEn = cols[3] || '';
-                    sampleJa = cols[4] || '';
+                    meaning = cols[1] || '';
+                    pos = cols[2] || '';
+                    phraseEn = cols[3] || '';
+                    phraseJa = cols[4] || '';
+                    sampleEn = cols[5] || '';
+                    sampleJa = cols[6] || '';
+                }
+
+                if (!phraseEn && cols.length >= 3) {
+                    phraseEn = cols[1];
+                    phraseJa = cols[2];
                 }
 
                 word = word.replace(/^"(.*)"$/, '$1').trim();
+                meaning = meaning.replace(/^"(.*)"$/, '$1').trim();
+                pos = pos.replace(/^"(.*)"$/, '$1').trim();
                 phraseEn = phraseEn.replace(/^"(.*)"$/, '$1').trim();
                 phraseJa = phraseJa.replace(/^"(.*)"$/, '$1').trim();
                 sampleEn = sampleEn.replace(/^"(.*)"$/, '$1').trim();
                 sampleJa = sampleJa.replace(/^"(.*)"$/, '$1').trim();
 
-                if (word && phraseEn) {
-                    newItems.push({
-                        id: startId++,
-                        word: word,
-                        phraseEn: phraseEn,
-                        phraseJa: phraseJa || word,
-                        sampleEn: sampleEn,
-                        sampleJa: sampleJa,
-                        interval: 0,
-                        repetition: 0,
-                        efactor: 2.5,
-                        dueDate: Date.now(),
-                        status: 'new',
-                        history: []
-                    });
+                if (!word || !phraseEn) {
+                    errorCount++;
+                    return;
                 }
+
+                newItems.push({
+                    id: startId++,
+                    word: word,
+                    meaning: meaning || word,
+                    pos: pos || '-',
+                    phraseEn: phraseEn,
+                    phraseJa: phraseJa || meaning || word,
+                    sampleEn: sampleEn,
+                    sampleJa: sampleJa,
+                    interval: 0,
+                    repetition: 0,
+                    efactor: 2.5,
+                    dueDate: Date.now(),
+                    status: 'new',
+                    history: []
+                });
             });
 
-            if (newItems.length === 0) {
-                alert("有効なデータを読み込めませんでした。フォーマットを確認してください。");
+            if (newItems.length === 0 || errorCount > lines.length / 2) {
+                alert("【エラー】ファイルフォーマットが正しくありません。インポートを中止しました。列の並びを確認してください。");
                 return;
             }
 
@@ -1580,11 +1615,13 @@
             }
 
             const bom = "\uFEFF";
-            let csvContent = bom + "ID,Word,PhraseEn,PhraseJa,SampleEn,SampleJa\n";
+            let csvContent = bom + "ID,Word,Meaning,Pos,PhraseEn,PhraseJa,SampleEn,SampleJa\n";
             cardsDb.forEach(c => {
                 const row = [
                     c.id,
                     `"${(c.word || '').replace(/"/g, '""')}"`,
+                    `"${(c.meaning || '').replace(/"/g, '""')}"`,
+                    `"${(c.pos || '').replace(/"/g, '""')}"`,
                     `"${(c.phraseEn || '').replace(/"/g, '""')}"`,
                     `"${(c.phraseJa || '').replace(/"/g, '""')}"`,
                     `"${(c.sampleEn || '').replace(/"/g, '""')}"`,
