@@ -3,16 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>口語英会話穴埋めトレーニング (SRS忘却曲線対応)</title>
-    <!-- Tailwind CSS CDN -->
+    <title>日常英会話穴埋めトレーニング (SRS忘却曲線対応)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Google Fonts Inter & Noto Sans JP -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <!-- SheetJS (xlsx) for Direct Excel (.xlsx/.xls) & CSV Auto-Encoding Parsing -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
     <style>
@@ -40,7 +36,7 @@
             padding: 2px 10px;
             background-color: #eef2ff;
             border-radius: 6px;
-            min-width: 70px;
+            min-width: 60px;
             text-align: center;
             margin: 0 2px;
         }
@@ -63,7 +59,6 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
 
-    <!-- Header Navigation -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
         <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-3 cursor-pointer" onclick="showView('title')">
@@ -71,12 +66,11 @@
                     <i data-lucide="brain-circuit" class="w-5 h-5"></i>
                 </div>
                 <div>
-                    <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">口語英会話穴埋めトレーニング</h1>
+                    <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">日常英会話穴埋めトレーニング</h1>
                     <p class="text-xs text-slate-500 font-medium">SRS忘却曲線 アルゴリズム搭載</p>
                 </div>
             </div>
 
-            <!-- View Navigation Buttons -->
             <div class="flex items-center space-x-1 bg-slate-100 p-1 rounded-xl text-xs font-semibold">
                 <button id="nav-btn-title" onclick="showView('title')" class="px-3 py-1.5 rounded-lg bg-white text-indigo-600 shadow-xs font-bold transition flex items-center gap-1">
                     <i data-lucide="home" class="w-3.5 h-3.5"></i>
@@ -86,7 +80,6 @@
                     <i data-lucide="database" class="w-3.5 h-3.5"></i>
                     <span>単語管理 / CSV</span>
                 </button>
-                <!-- Voice Settings Button -->
                 <button onclick="openVoiceModal()" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 transition flex items-center gap-1 border border-transparent">
                     <i data-lucide="sliders" class="w-3.5 h-3.5 text-indigo-600"></i>
                     <span>音声設定</span>
@@ -95,12 +88,10 @@
         </div>
     </header>
 
-    <!-- Main Container -->
     <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-6">
 
-        <!-- 1. TITLE VIEW (Dashboard) -->
+        <!-- Title View -->
         <div id="view-title" class="space-y-6">
-            <!-- Hero Welcome Card -->
             <div class="bg-gradient-to-br from-indigo-900 via-indigo-800 to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
                 <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
                 <div class="relative z-10 space-y-3">
@@ -109,7 +100,7 @@
                         <span>Anki風 記憶定着アルゴリズム</span>
                     </div>
                     <h2 class="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight leading-none whitespace-nowrap overflow-hidden text-ellipsis">
-                        口語英会話穴埋めトレーニング
+                        日常英会話穴埋めトレーニング
                     </h2>
                     <p class="text-indigo-200 text-xs sm:text-sm max-w-xl leading-relaxed">
                         忘却曲線に沿ってあなたの記憶度を自動分析。復習すべきタイミングの単語を自動抽出して効率的に学習できます。
@@ -117,7 +108,6 @@
                 </div>
             </div>
 
-            <!-- Learning Today Status Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex items-center space-x-4">
                     <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 border border-amber-100">
@@ -153,7 +143,6 @@
                 </div>
             </div>
 
-            <!-- Start Action Buttons -->
             <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
                 <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
                     <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
@@ -161,7 +150,6 @@
                         <span>学習を開始する</span>
                     </h3>
 
-                    <!-- Daily Limit Setting Dropdown -->
                     <div class="flex items-center space-x-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 text-xs">
                         <i data-lucide="target" class="w-4 h-4 text-indigo-600"></i>
                         <span class="font-bold text-slate-700">1日の最大出題数:</span>
@@ -197,9 +185,8 @@
             </div>
         </div>
 
-        <!-- 2. QUIZ VIEW (Interactive Session) -->
+        <!-- Quiz View -->
         <div id="view-quiz" class="space-y-4 hidden">
-            <!-- Progress Bar Card -->
             <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs flex items-center justify-between gap-4">
                 <div class="flex-1 space-y-1.5">
                     <div class="flex justify-between items-center text-xs font-bold">
@@ -216,10 +203,8 @@
                 </button>
             </div>
 
-            <!-- Question Card -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm space-y-6 relative overflow-hidden">
-                <!-- Top Badge & Speech -->
-                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm space-y-5 relative overflow-hidden">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                     <div class="flex items-center space-x-2">
                         <span id="card-id-badge" class="bg-slate-900 text-white text-xs font-extrabold px-2.5 py-1 rounded-lg">#1</span>
                         <span id="card-srs-status" class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-lg border border-amber-200">復習期日</span>
@@ -231,26 +216,25 @@
                     </button>
                 </div>
 
-                <!-- English Blank Phrase Container -->
-                <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-5 sm:p-6">
-                    <span class="text-[11px] font-bold text-indigo-500 uppercase tracking-wider block mb-3">【問題】実践フレーズ（空欄補完）</span>
-                    <p id="quiz-phrase-en" class="text-xl sm:text-2xl font-bold text-slate-800 leading-relaxed">
-                        <!-- Dynamic Phrase with Blanks -->
-                    </p>
-                </div>
-
-                <!-- Japanese Hint -->
-                <div class="bg-amber-50/70 border border-amber-200/60 rounded-xl p-4">
-                    <div class="flex items-center gap-1.5 mb-1">
-                        <i data-lucide="lightbulb" class="w-4 h-4 text-amber-600"></i>
-                        <span class="text-xs font-bold text-amber-800">ヒント（日本語訳）</span>
+                <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-3 space-y-1.5">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-bold text-slate-600 flex items-center gap-1">
+                            <i data-lucide="bar-chart-2" class="w-3.5 h-3.5 text-indigo-600"></i>
+                            <span>出題履歴・回答内訳:</span>
+                        </span>
+                        <span id="quiz-history-total" class="font-bold text-slate-700">総出題: 0回</span>
                     </div>
-                    <p id="quiz-phrase-ja" class="text-sm font-semibold text-amber-950 leading-relaxed">
-                        <!-- Dynamic Japanese Translation -->
-                    </p>
+                    <div id="quiz-history-chart-area"></div>
                 </div>
 
-                <!-- Reveal Button (Before Answer) -->
+                <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-5 sm:p-6 space-y-2">
+                    <span class="text-[11px] font-bold text-indigo-500 uppercase tracking-wider block">【問題】実践フレーズ（空欄補完）</span>
+                    <div class="space-y-1">
+                        <p id="quiz-phrase-en" class="text-xl sm:text-2xl font-bold text-slate-800 leading-relaxed"></p>
+                        <p id="quiz-phrase-ja-inline" class="text-xs sm:text-sm font-semibold text-slate-500 italic"></p>
+                    </div>
+                </div>
+
                 <div id="quiz-reveal-control" class="pt-2 border-t border-slate-100">
                     <button onclick="revealAnswer()" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-extrabold text-base rounded-xl shadow-md shadow-indigo-200 transition flex items-center justify-center space-x-2">
                         <i data-lucide="eye" class="w-5 h-5"></i>
@@ -258,9 +242,7 @@
                     </button>
                 </div>
 
-                <!-- Answer & 4-Level SRS Classification Buttons (After Answer) -->
                 <div id="quiz-answer-area" class="hidden space-y-4 pt-2 border-t border-slate-100">
-                    <!-- 4-Level Classification Buttons (Placed prominently at top) -->
                     <div class="space-y-2">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">理解度を評価</span>
@@ -290,7 +272,6 @@
                         </div>
                     </div>
 
-                    <!-- Extra Sample Sentence & Full Phrase Reference -->
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-1.5 text-xs text-slate-700">
                         <div class="flex items-center gap-1 font-bold text-slate-800">
                             <i data-lucide="file-text" class="w-3.5 h-3.5 text-indigo-600"></i>
@@ -298,17 +279,15 @@
                         </div>
                         <p id="quiz-sample-en" class="font-medium text-slate-800 text-xs sm:text-sm pl-4 border-l-2 border-indigo-400"></p>
                         <p id="quiz-sample-ja" class="text-slate-500 pl-4"></p>
-                        <!-- Hidden phrase container for JS compatibility -->
                         <div id="quiz-full-phrase" class="hidden"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Footer Shortcut Helper -->
             <p class="text-center text-xs text-slate-400">キーボード操作: [Space]正解表示 / [1〜4]理解度評価</p>
         </div>
 
-        <!-- 3. COMPLETED VIEW (Summary) -->
+        <!-- Complete View -->
         <div id="view-complete" class="bg-white rounded-2xl border border-slate-200 p-8 text-center shadow-sm space-y-6 hidden">
             <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto shadow-md shadow-emerald-50">
                 <i data-lucide="trophy" class="w-8 h-8"></i>
@@ -336,9 +315,8 @@
             </button>
         </div>
 
-        <!-- 4. MANAGE & CSV VIEW -->
+        <!-- Manage View -->
         <div id="view-manage" class="space-y-6 hidden">
-            <!-- Top Controls -->
             <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-wrap items-center justify-between gap-3">
                 <div>
                     <h3 class="text-base font-bold text-slate-900">単語データ管理 & CSVインポート/エクスポート</h3>
@@ -361,7 +339,6 @@
                 </div>
             </div>
 
-            <!-- List Search & Table -->
             <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs space-y-4">
                 <div class="relative max-w-sm">
                     <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
@@ -377,12 +354,11 @@
                                 <th class="p-3">問題フレーズ</th>
                                 <th class="p-3">日本語ヒント</th>
                                 <th class="p-3">学習状態</th>
+                                <th class="p-3">出題履歴グラフ</th>
                                 <th class="p-3 text-right">操作</th>
                             </tr>
                         </thead>
-                        <tbody id="manage-table-body" class="divide-y divide-slate-100">
-                            <!-- Dynamic Table Rows -->
-                        </tbody>
+                        <tbody id="manage-table-body" class="divide-y divide-slate-100"></tbody>
                     </table>
                 </div>
             </div>
@@ -390,7 +366,7 @@
 
     </main>
 
-    <!-- CSV / Spreadsheet Import Modal -->
+    <!-- Import Modal -->
     <div id="import-modal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-xl border border-slate-200 space-y-4">
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
@@ -404,29 +380,26 @@
             </div>
 
             <p class="text-xs text-slate-500">
-                Excel (.xlsx/.xls) または CSV/TSV ファイルのドロップ、コピペでデータを一括取り込みできます。<br>
-                フォーマット順: <code class="bg-slate-100 px-1 py-0.5 rounded text-indigo-600 font-bold">単語 , フレーズ英語 , フレーズ日本語 , 例文英語 , 例文日本語</code>
+                Excel (.xlsx/.xls) または CSV/TSV ファイルをドロップまたはファイル選択すると、1行目の見出しを自動除外して一括取り込みできます。
             </p>
 
-            <!-- File Drop Zone -->
             <div id="import-drop-zone" onclick="document.getElementById('file-input').click()" class="border-2 border-dashed border-slate-300 hover:border-indigo-500 bg-slate-50 hover:bg-indigo-50/50 rounded-xl p-5 text-center cursor-pointer transition flex flex-col items-center justify-center gap-2 group">
                 <div class="w-10 h-10 rounded-full bg-indigo-100 group-hover:bg-indigo-200 text-indigo-600 flex items-center justify-center transition shadow-2xs">
                     <i data-lucide="file-up" class="w-5 h-5"></i>
                 </div>
                 <div>
-                    <p class="text-xs font-bold text-slate-700 group-hover:text-indigo-600 transition">ここにExcel (.xlsx / .xls) や CSVファイルをドロップ、またはクリックしてファイル選択</p>
-                    <p class="text-[10px] text-slate-400 mt-0.5">対応形式: .xlsx, .xls, .csv, .tsv, .txt (日本語文字化け防止・Excel直込対応)</p>
+                    <p class="text-xs font-bold text-slate-700 group-hover:text-indigo-600 transition">Excel (.xlsx / .xls) や CSVファイルをドロップ、またはクリックしてファイル選択</p>
+                    <p class="text-[10px] text-slate-400 mt-0.5">対応形式: .xlsx, .xls, .csv, .tsv</p>
                 </div>
                 <input type="file" id="file-input" accept=".xlsx,.xls,.csv,.tsv,.txt" onchange="handleFileSelect(event)" class="hidden">
             </div>
 
-            <!-- File Info / Status display -->
             <div id="file-info-bar" class="hidden bg-indigo-50 border border-indigo-200 rounded-xl p-2.5 text-xs text-indigo-900 flex items-center justify-between">
                 <span class="font-bold truncate max-w-[80%]" id="file-info-name">ファイル名</span>
                 <button onclick="clearSelectedFile()" class="text-indigo-600 hover:text-indigo-800 font-bold text-[11px] underline">解除</button>
             </div>
 
-            <textarea id="import-textarea" rows="5" placeholder="またはテキストを直接貼り付け:&#10;trail race	I took part in a challenging trail race last weekend.	先週末、トレイルランの大会に参加しました。	The trail race takes runners...	トレイルランの大会は..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:outline-none focus:border-indigo-500"></textarea>
+            <textarea id="import-textarea" rows="5" placeholder="またはテキストを直接貼り付け..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:outline-none focus:border-indigo-500"></textarea>
 
             <div class="flex items-center justify-between pt-2">
                 <label class="text-xs text-slate-600 flex items-center gap-2 cursor-pointer">
@@ -442,7 +415,7 @@
         </div>
     </div>
 
-    <!-- Voice Settings Modal -->
+    <!-- Voice Modal -->
     <div id="voice-modal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-200 space-y-5">
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
@@ -457,7 +430,6 @@
                 </button>
             </div>
 
-            <!-- Speech Engine Selection -->
             <div class="space-y-2">
                 <label class="text-xs font-bold text-slate-700 block">音声生成エンジン</label>
                 <div class="grid grid-cols-2 gap-2">
@@ -473,7 +445,6 @@
                 </div>
             </div>
 
-            <!-- Voice Character Options for Gemini TTS -->
             <div id="gemini-voice-container" class="space-y-2">
                 <label class="text-xs font-bold text-slate-700 block">AIボイスキャラクター選択</label>
                 <select id="gemini-voice-select" onchange="saveVoiceSettings()" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-indigo-500">
@@ -489,15 +460,11 @@
                 </select>
             </div>
 
-            <!-- Browser Native Speech Voice Options -->
             <div id="browser-voice-container" class="space-y-2 hidden">
                 <label class="text-xs font-bold text-slate-700 block">端末の英語ボイス選択</label>
-                <select id="browser-voice-select" onchange="saveVoiceSettings()" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-indigo-500">
-                    <!-- Dynamic Voice List -->
-                </select>
+                <select id="browser-voice-select" onchange="saveVoiceSettings()" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-indigo-500"></select>
             </div>
 
-            <!-- Test Speech Button -->
             <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
                 <button onclick="testSpeechSample()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-indigo-700 text-xs font-bold rounded-xl transition flex items-center gap-1.5">
                     <i data-lucide="play-circle" class="w-4 h-4 text-indigo-600"></i>
@@ -511,7 +478,6 @@
     </div>
 
     <script>
-        // Default 50 Selected Vocabulary List (100% matched with spreadsheet output)
         const defaultVocabData = [
             { id: 1, word: "trail race", phraseEn: "run a trail race", phraseJa: "トレイルレースに出場する", sampleEn: "The mountain path for the trail race was quite steep.", sampleJa: "トレイルレースの山道はかなり険しかった。" },
             { id: 2, word: "manage to", phraseEn: "manage to finish", phraseJa: "なんとか完走する", sampleEn: "I managed to catch the last train home.", sampleJa: "終電になんとか間に合った。" },
@@ -565,20 +531,17 @@
             { id: 50, word: "maximum", phraseEn: "max heart rate", phraseJa: "最大心拍数", sampleEn: "The maximum capacity of this conference room is fifty people.", sampleJa: "この会議室の最大収容人数は50人です。" }
         ];
 
-        // Global App State & Database
-        let cardsDb = []; // Full card objects with SRS metadata
-        let sessionQueue = []; // Active cards in current session
+        let cardsDb = [];
+        let sessionQueue = [];
         let currentCardIndex = 0;
         let isAnswerRevealed = false;
-        let activeSessionType = 'due'; // 'due' | 'all'
-        let dailyLimit = 20; // Default daily limit (cards per session)
+        let activeSessionType = 'due';
+        let dailyLimit = 20;
 
-        // LocalStorage Key (Updated to v3 for exact 50-word table sync)
-        const STORAGE_KEY = 'trail_srs_vocab_db_v3';
+        const STORAGE_KEY = 'trail_srs_vocab_db_v4';
         const VOICE_SETTINGS_KEY = 'trail_srs_voice_config_v1';
         const DAILY_LIMIT_KEY = 'trail_srs_daily_limit_v1';
 
-        // Load & Save Daily Limit Setting
         function loadDailyLimit() {
             const saved = localStorage.getItem(DAILY_LIMIT_KEY);
             if (saved) {
@@ -598,14 +561,12 @@
             }
         }
 
-        // Voice Settings State
         let voiceConfig = {
-            engine: 'gemini', // 'gemini' | 'browser'
+            engine: 'gemini',
             geminiVoice: 'Kore',
             browserVoiceName: ''
         };
 
-        // Load Voice Settings
         function loadVoiceSettings() {
             const saved = localStorage.getItem(VOICE_SETTINGS_KEY);
             if (saved) {
@@ -682,7 +643,6 @@
             window.speechSynthesis.onvoiceschanged = populateBrowserVoices;
         }
 
-        // Gemini AI High-Quality Speech Synthesis Helper (PCM16 -> WAV conversion)
         function base64ToArrayBuffer(base64) {
             const binaryString = atob(base64);
             const len = binaryString.length;
@@ -713,7 +673,7 @@
             writeString(view, 8, 'WAVE');
             writeString(view, 12, 'fmt ');
             view.setUint32(16, 16, true);
-            view.setUint16(20, 1, true); // PCM
+            view.setUint16(20, 1, true);
             view.setUint16(22, numChannels, true);
             view.setUint32(24, sampleRate, true);
             view.setUint32(28, byteRate, true);
@@ -730,20 +690,17 @@
             return new Blob([buffer], { type: 'audio/wav' });
         }
 
-        // Global Speech Player Engine
         let currentAudioPlayer = null;
 
         async function speakText(text) {
             if (!text) return;
 
-            // Stop any playing browser speech
             if ('speechSynthesis' in window) window.speechSynthesis.cancel();
             if (currentAudioPlayer) {
                 currentAudioPlayer.pause();
                 currentAudioPlayer = null;
             }
 
-            // Visual feedback indicator
             const phraseLabel = document.getElementById('label-speak-phrase');
             const originalLabel = phraseLabel ? phraseLabel.textContent : '';
             if (phraseLabel) phraseLabel.textContent = "音声生成中...";
@@ -805,7 +762,6 @@
                 }
             }
 
-            // Fallback or Native Browser Speech
             if ('speechSynthesis' in window) {
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'en-US';
@@ -835,7 +791,6 @@
             speakText("I took part in a challenging trail race last weekend.");
         }
 
-        // Load DB or Initialize Defaults
         function loadDatabase() {
             const saved = localStorage.getItem(STORAGE_KEY);
             if (saved) {
@@ -847,16 +802,20 @@
             }
 
             if (!cardsDb || cardsDb.length === 0) {
-                // Initialize default SRS data
                 cardsDb = defaultVocabData.map(item => ({
                     ...item,
-                    interval: 0,       // Days until next review
-                    repetition: 0,     // Consecutive successful reviews
-                    efactor: 2.5,      // Ease factor (SM-2)
-                    dueDate: Date.now(), // Timestamp for review
-                    status: 'new'      // 'new' | 'learning' | 'mastered'
+                    interval: 0,
+                    repetition: 0,
+                    efactor: 2.5,
+                    dueDate: Date.now(),
+                    status: 'new',
+                    history: []
                 }));
                 saveDatabase();
+            } else {
+                cardsDb.forEach(c => {
+                    if (!c.history) c.history = [];
+                });
             }
         }
 
@@ -865,19 +824,19 @@
             updateTitleStats();
         }
 
-        // SRS Algorithm (Modified SM-2)
-        // Grade: 1 (Again), 2 (Hard), 3 (Good), 4 (Easy)
         function updateCardSRS(card, grade) {
             const NOW = Date.now();
             const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
-            if (grade === 1) { // Again (Failed / Forgot)
+            if (!card.history) card.history = [];
+            card.history.push(grade);
+
+            if (grade === 1) {
                 card.repetition = 0;
-                card.interval = 0; // Due immediately / today
+                card.interval = 0;
                 card.dueDate = NOW;
                 card.status = 'learning';
             } else {
-                // Adjust Ease Factor (minimum 1.3)
                 card.efactor = Math.max(1.3, card.efactor + (0.1 - (5 - grade) * (0.08 + (5 - grade) * 0.02)));
 
                 if (card.repetition === 0) {
@@ -886,8 +845,8 @@
                     card.interval = grade === 4 ? 6 : 3;
                 } else {
                     let multiplier = card.efactor;
-                    if (grade === 2) multiplier *= 0.8; // Hard penalty
-                    if (grade === 4) multiplier *= 1.3; // Easy bonus
+                    if (grade === 2) multiplier *= 0.8;
+                    if (grade === 4) multiplier *= 1.3;
                     card.interval = Math.round(card.interval * multiplier);
                 }
 
@@ -930,7 +889,6 @@
             if (dueCount + newCount === 0) {
                 subtitle.textContent = "本日の復習はすべて完了しています！";
             } else {
-                // Calculate planned card counts based on dailyLimit
                 const plannedDue = Math.min(dueCount, dailyLimit);
                 const remainingSlots = Math.max(0, dailyLimit - plannedDue);
                 const plannedNew = Math.min(newCount, remainingSlots);
@@ -940,13 +898,11 @@
             }
         }
 
-        // Session Controller
         function startSession(type) {
             activeSessionType = type;
             const NOW = Date.now();
 
             if (type === 'due') {
-                // Filter due cards + new cards capped by dailyLimit
                 const dueCards = cardsDb.filter(c => c.status !== 'new' && c.dueDate <= NOW);
                 const targetDue = dueCards.slice(0, dailyLimit);
                 const remainingSlots = Math.max(0, dailyLimit - targetDue.length);
@@ -955,11 +911,9 @@
                 sessionQueue = [...targetDue, ...newCards];
 
                 if (sessionQueue.length === 0) {
-                    // Fallback if all caught up: shuffle cards up to dailyLimit
                     sessionQueue = [...cardsDb].sort(() => 0.5 - Math.random()).slice(0, Math.min(10, dailyLimit));
                 }
             } else {
-                // All cards shuffled
                 sessionQueue = [...cardsDb].sort(() => 0.5 - Math.random());
             }
 
@@ -968,29 +922,73 @@
             renderQuizCard();
         }
 
+        // Robust Tokenizer: Splits multi-word target into individual words and masks them separately inside phraseEn
         function generateBlankPhrase(phraseEn, word) {
             if (!phraseEn || !word) return phraseEn;
 
-            // Escape word regex special characters
-            const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            
-            // Flexible Regex to match variations (case-insensitive, tense variations)
-            const regex = new RegExp(`\\b${escapedWord}(ing|ed|s)?\\b`, 'gi');
+            const cleanWord = word.replace(/[?.,!]/g, '').trim();
+            const targetWords = cleanWord.toLowerCase().split(/\s+/).filter(w => w.length > 0);
 
-            let hasMatched = false;
-            let resultHtml = phraseEn.replace(regex, (match) => {
-                hasMatched = true;
-                // Generate blank representation
-                return `<span class="blank-box" id="active-blank-box">${'_'.repeat(Math.max(4, match.length))}</span>`;
+            // Tokenize sentence preserving punctuation and spaces
+            let tokens = phraseEn.match(/[\w'-]+|[^\w\s]|\s+/g) || [phraseEn];
+            let resultHtml = '';
+            let blankIndex = 0;
+
+            tokens.forEach(token => {
+                const cleanToken = token.replace(/[\W_]+/g, '').toLowerCase();
+                const isMatch = targetWords.some(tw => tw === cleanToken);
+
+                if (isMatch && cleanToken.length > 0) {
+                    blankIndex++;
+                    resultHtml += `<span class="blank-box" id="active-blank-box-${blankIndex}" data-original="${token}">${'_'.repeat(Math.max(4, token.trim().length))}</span>`;
+                } else {
+                    resultHtml += token;
+                }
             });
 
-            // Fallback if strict word boundary regex didn't hit
-            if (!hasMatched) {
-                const simpleRegex = new RegExp(escapedWord, 'gi');
-                resultHtml = phraseEn.replace(simpleRegex, `<span class="blank-box" id="active-blank-box">____</span>`);
+            return resultHtml;
+        }
+
+        function renderHistoryBarChartHtml(history, compact = false) {
+            const hist = history || [];
+            const total = hist.length;
+
+            if (total === 0) {
+                return `<span class="text-[11px] text-slate-400 italic">未出題（履歴なし）</span>`;
             }
 
-            return resultHtml;
+            let counts = { 1: 0, 2: 0, 3: 0, 4: 0 };
+            hist.forEach(g => {
+                if (counts[g] !== undefined) counts[g]++;
+            });
+
+            const p1 = (counts[1] / total) * 100;
+            const p2 = (counts[2] / total) * 100;
+            const p3 = (counts[3] / total) * 100;
+            const p4 = (counts[4] / total) * 100;
+
+            const heightClass = compact ? 'h-3' : 'h-4';
+            const textSize = compact ? 'text-[9px]' : 'text-[10px]';
+
+            return `
+                <div class="space-y-1">
+                    <div class="w-full bg-slate-200 rounded-full overflow-hidden flex ${heightClass} shadow-2xs" title="総出題回数: ${total}回">
+                        ${p1 > 0 ? `<div style="width: ${p1}%" class="bg-rose-500 hover:bg-rose-600 transition" title="1(わからなかった): ${counts[1]}回"></div>` : ''}
+                        ${p2 > 0 ? `<div style="width: ${p2}%" class="bg-amber-400 hover:bg-amber-500 transition" title="2(復習したい): ${counts[2]}回"></div>` : ''}
+                        ${p3 > 0 ? `<div style="width: ${p3}%" class="bg-blue-400 hover:bg-blue-500 transition" title="3(時間がかかった): ${counts[3]}回"></div>` : ''}
+                        ${p4 > 0 ? `<div style="width: ${p4}%" class="bg-emerald-500 hover:bg-emerald-600 transition" title="4(すぐ分かった): ${counts[4]}回"></div>` : ''}
+                    </div>
+                    <div class="flex items-center justify-between ${textSize} text-slate-500 font-semibold px-0.5">
+                        <span>計 ${total}回</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-rose-600" title="1:わからなかった">1:${counts[1]}</span>
+                            <span class="text-amber-600" title="2:復習">2:${counts[2]}</span>
+                            <span class="text-blue-600" title="3:時間">3:${counts[3]}</span>
+                            <span class="text-emerald-600" title="4:簡単">4:${counts[4]}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
         function renderQuizCard() {
@@ -999,7 +997,6 @@
             document.getElementById('quiz-reveal-control').classList.remove('hidden');
 
             if (sessionQueue.length === 0 || currentCardIndex >= sessionQueue.length) {
-                // Session Complete
                 document.getElementById('summary-session-count').textContent = `${sessionQueue.length} カード`;
                 const masteredCount = cardsDb.filter(c => c.status === 'mastered').length;
                 document.getElementById('summary-mastered-count').textContent = `${masteredCount} / ${cardsDb.length} カード`;
@@ -1009,13 +1006,11 @@
 
             const card = sessionQueue[currentCardIndex];
 
-            // Progress text
             document.getElementById('quiz-progress-text').textContent = `進捗: ${currentCardIndex + 1} / ${sessionQueue.length}`;
             document.getElementById('quiz-remaining-text').textContent = `残り ${sessionQueue.length - currentCardIndex} カード`;
             const pct = Math.round(((currentCardIndex) / sessionQueue.length) * 100);
             document.getElementById('quiz-progress-bar').style.width = `${pct}%`;
 
-            // Card Badge
             document.getElementById('card-id-badge').textContent = `#${card.id}`;
             const srsBadge = document.getElementById('card-srs-status');
             if (card.status === 'new') {
@@ -1029,11 +1024,12 @@
                 srsBadge.className = "bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-lg border border-amber-200";
             }
 
-            // Question Phrase with Blank
-            document.getElementById('quiz-phrase-en').innerHTML = generateBlankPhrase(card.phraseEn, card.word);
-            document.getElementById('quiz-phrase-ja').textContent = card.phraseJa;
+            document.getElementById('quiz-history-total').textContent = `総出題: ${card.history ? card.history.length : 0}回`;
+            document.getElementById('quiz-history-chart-area').innerHTML = renderHistoryBarChartHtml(card.history, false);
 
-            // Target Answer Prepared
+            document.getElementById('quiz-phrase-en').innerHTML = generateBlankPhrase(card.phraseEn, card.word);
+            document.getElementById('quiz-phrase-ja-inline').textContent = `(${card.phraseJa})`;
+
             document.getElementById('quiz-target-word').textContent = card.word;
             document.getElementById('quiz-full-phrase').textContent = card.phraseEn;
             document.getElementById('quiz-sample-en').textContent = card.sampleEn || '---';
@@ -1049,18 +1045,17 @@
             document.getElementById('quiz-reveal-control').classList.add('hidden');
             document.getElementById('quiz-answer-area').classList.remove('hidden');
 
-            const card = sessionQueue[currentCardIndex];
-
-            // Replace blank box with highlighted answer text
-            const blankBox = document.getElementById('active-blank-box');
-            if (blankBox) {
-                blankBox.textContent = card.word;
+            let i = 1;
+            while (true) {
+                const blankBox = document.getElementById(`active-blank-box-${i}`);
+                if (!blankBox) break;
+                const originalText = blankBox.getAttribute('data-original');
+                blankBox.textContent = originalText;
                 blankBox.className = "reveal-box";
+                i++;
             }
 
-            // Requirement 4: Speak full phrase immediately upon answer reveal
             speakCurrentPhrase();
-
             lucide.createIcons();
         }
 
@@ -1068,10 +1063,8 @@
             if (sessionQueue.length === 0) return;
             const card = sessionQueue[currentCardIndex];
 
-            // Update SRS state in DB
             updateCardSRS(card, grade);
 
-            // If grade 1 (Again), re-append to end of current session queue
             if (grade === 1) {
                 sessionQueue.push(card);
             }
@@ -1092,21 +1085,6 @@
             speakText(card.word);
         }
 
-        function speakText(text) {
-            if (!('speechSynthesis' in window)) return;
-            window.speechSynthesis.cancel();
-
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US';
-            utterance.rate = 0.95;
-
-            const voices = window.speechSynthesis.getVoices();
-            const enVoice = voices.find(v => v.lang.startsWith('en'));
-            if (enVoice) utterance.voice = enVoice;
-
-            window.speechSynthesis.speak(utterance);
-        }
-
         function showView(viewName) {
             ['title', 'quiz', 'complete', 'manage'].forEach(v => {
                 const el = document.getElementById(`view-${v}`);
@@ -1119,7 +1097,6 @@
                 }
             });
 
-            // Update Nav Buttons
             document.getElementById('nav-btn-title').className = viewName === 'title' 
                 ? "px-3 py-1.5 rounded-lg bg-white text-indigo-600 shadow-xs font-bold transition flex items-center gap-1"
                 : "px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center gap-1";
@@ -1143,7 +1120,6 @@
             }
         }
 
-        // Render Manage Data Table
         function renderManageTable() {
             const tbody = document.getElementById('manage-table-body');
             tbody.innerHTML = '';
@@ -1158,7 +1134,7 @@
             });
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400">該当する単語が見つかりません。</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">該当する単語が見つかりません。</td></tr>`;
                 return;
             }
 
@@ -1173,12 +1149,15 @@
                     statusBadge = `<span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded text-[10px]">学習中</span>`;
                 }
 
+                const chartHtml = renderHistoryBarChartHtml(card.history, true);
+
                 tr.innerHTML = `
                     <td class="p-3 font-bold text-indigo-600">#${card.id}</td>
                     <td class="p-3 font-bold text-slate-900">${card.word}</td>
                     <td class="p-3 text-slate-700 max-w-xs truncate" title="${card.phraseEn}">${card.phraseEn}</td>
                     <td class="p-3 text-slate-600 max-w-xs truncate" title="${card.phraseJa}">${card.phraseJa}</td>
                     <td class="p-3">${statusBadge}</td>
+                    <td class="p-3 w-48">${chartHtml}</td>
                     <td class="p-3 text-right">
                         <button onclick="deleteCard(${card.id})" class="p-1 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded" title="削除">
                             <i data-lucide="trash-2" class="w-4 h-4"></i>
@@ -1207,7 +1186,6 @@
             }
         }
 
-        // CSV / Spreadsheet Import & Export
         function openImportModal() {
             document.getElementById('import-modal').classList.remove('hidden');
             setupDropZone();
@@ -1270,13 +1248,19 @@
                 const buffer = e.target.result;
 
                 try {
-                    // 1. Try parsing via SheetJS (Handles .xlsx, .xls, and Shift-JIS/UTF-8 CSVs seamlessly)
                     const workbook = XLSX.read(buffer, { type: 'array' });
                     const firstSheetName = workbook.SheetNames[0];
                     const worksheet = workbook.Sheets[firstSheetName];
-                    const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: false });
+                    let rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: false });
 
                     if (rows && rows.length > 0) {
+                        if (rows.length > 1) {
+                            const firstRowStr = rows[0].join(' ').toLowerCase();
+                            if (firstRowStr.includes('通し番') || firstRowStr.includes('id') || firstRowStr.includes('word') || firstRowStr.includes('単語') || firstRowStr.includes('和訳')) {
+                                rows = rows.slice(1);
+                            }
+                        }
+
                         const formattedText = rows
                             .filter(r => r && r.length > 0 && r.some(cell => cell !== null && cell !== undefined && String(cell).trim() !== ''))
                             .map(row => row.map(cell => (cell !== null && cell !== undefined ? String(cell).replace(/\r?\n|\r|\t/g, ' ') : '')).join('\t'))
@@ -1288,10 +1272,9 @@
                         return;
                     }
                 } catch (xlsxErr) {
-                    console.warn("SheetJS parse skipped or failed, trying plain text decoders:", xlsxErr);
+                    console.warn("SheetJS parse skipped or failed:", xlsxErr);
                 }
 
-                // 2. Fallback text decoding (UTF-8 / Shift-JIS / CP932 / UTF-16LE)
                 let text = "";
                 try {
                     const utf8Decoder = new TextDecoder('utf-8', { fatal: true });
@@ -1364,21 +1347,24 @@
             let newItems = [];
             let startId = overwrite ? 1 : (cardsDb.length > 0 ? Math.max(...cardsDb.map(c => c.id)) + 1 : 1);
 
-            lines.forEach(line => {
+            lines.forEach((line, index) => {
                 if (!line.trim()) return;
                 const cols = parseCSVLine(line);
                 if (cols.length < 2) return;
 
-                // Check and skip header row (e.g., "ID", "Word", "単語", "PhraseEn")
-                const firstCol = cols[0].toLowerCase();
-                const secondCol = cols[1] ? cols[1].toLowerCase() : '';
-                if (firstCol === 'id' || firstCol === 'word' || firstCol === '単語' || firstCol === 'ターゲット単語' || secondCol === 'word' || secondCol === '単語') {
+                const col0 = (cols[0] || '').toLowerCase().replace(/['"]/g, '').trim();
+                const col1 = (cols[1] || '').toLowerCase().replace(/['"]/g, '').trim();
+                
+                const isHeaderKeyword = 
+                    col0 === 'id' || col0 === 'word' || col0 === '単語' || col0 === 'ターゲット単語' || col0 === 'no' || col0 === '番号' || col0.includes('通し番') ||
+                    col1 === 'word' || col1 === '単語' || col1 === 'phrase' || col1 === 'フレーズ' || col1 === '英語' || col1.includes('単語・熟語');
+
+                if (isHeaderKeyword || (index === 0 && (col0.length > 30 || col1.length > 50 || col0.includes('番号')))) {
                     return;
                 }
 
                 let word = '', phraseEn = '', phraseJa = '', sampleEn = '', sampleJa = '';
 
-                // Smart Detection: If 1st column is numeric ID (e.g., "1", "#1") and 2nd column is word
                 const isFirstColId = (/^\d+$/.test(cols[0].replace('#', '')) || cols[0].startsWith('#')) && cols.length >= 3;
                 if (isFirstColId) {
                     word = cols[1] || '';
@@ -1394,7 +1380,6 @@
                     sampleJa = cols[4] || '';
                 }
 
-                // Strip surrounding quotes
                 word = word.replace(/^"(.*)"$/, '$1').trim();
                 phraseEn = phraseEn.replace(/^"(.*)"$/, '$1').trim();
                 phraseJa = phraseJa.replace(/^"(.*)"$/, '$1').trim();
@@ -1413,7 +1398,8 @@
                         repetition: 0,
                         efactor: 2.5,
                         dueDate: Date.now(),
-                        status: 'new'
+                        status: 'new',
+                        history: []
                     });
                 }
             });
@@ -1442,7 +1428,6 @@
                 return;
             }
 
-            // Add UTF-8 BOM (\uFEFF) so Excel opens it with correct Japanese encoding
             const bom = "\uFEFF";
             let csvContent = bom + "ID,Word,PhraseEn,PhraseJa,SampleEn,SampleJa\n";
             cardsDb.forEach(c => {
@@ -1467,7 +1452,6 @@
             document.body.removeChild(link);
         }
 
-        // Keyboard Shortcuts Handler
         document.addEventListener('keydown', (e) => {
             const quizView = document.getElementById('view-quiz');
             if (quizView.classList.contains('hidden')) return;
@@ -1490,7 +1474,6 @@
             }
         });
 
-        // Window Load Initialization
         window.onload = function() {
             loadVoiceSettings();
             loadDailyLimit();
