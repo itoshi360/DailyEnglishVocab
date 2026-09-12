@@ -942,7 +942,7 @@
                     console.error(err);
                     alert("バックアップファイルの読み込みに失敗しました。正しいJSONファイルを選択してください。");
                 }
-                event.target.value = ''; // Reset file input
+                event.target.value = '';
             };
             reader.readAsText(file);
         }
@@ -1048,9 +1048,25 @@
         function generateBlankPhrase(phraseEn, word) {
             if (!phraseEn || !word) return phraseEn;
 
-            const cleanWord = word.trim();
-            const wordTokens = cleanWord.toLowerCase().split(/\s+/).filter(t => t.length > 0);
+            const cleanWord = word.trim().toLowerCase();
+            const phraseLower = phraseEn.toLowerCase();
 
+            // 1. Exact or Substring match check (e.g. "low-carb" in "a low-carb diet")
+            const idx = phraseLower.indexOf(cleanWord);
+            if (idx !== -1) {
+                const targetSubstr = phraseEn.substr(idx, word.length);
+                const blankMask = targetSubstr.replace(/[a-zA-Z0-9]/g, '_');
+                const escaped = targetSubstr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const regex = new RegExp(escaped, 'i');
+                let blankCounter = 0;
+                return phraseEn.replace(regex, (match) => {
+                    blankCounter++;
+                    return `<span class="blank-box" id="active-blank-box-${blankCounter}" data-original="${match}">${blankMask}</span>`;
+                });
+            }
+
+            // 2. Token-by-token flexible match
+            const wordTokens = cleanWord.split(/[\s-]+/).filter(t => t.length > 0);
             let tokens = phraseEn.match(/[\w'-]+|[^\w\s]|\s+/g) || [phraseEn];
             let resultHtml = '';
             let blankCounter = 0;
@@ -1059,17 +1075,11 @@
                 let token = tokens[i];
                 let cleanToken = token.replace(/[\W_]+/g, '').toLowerCase();
 
-                let matchedTokenIndex = -1;
-                for (let wIdx = 0; wIdx < wordTokens.length; wIdx++) {
-                    if (cleanToken === wordTokens[wIdx]) {
-                        matchedTokenIndex = wIdx;
-                        break;
-                    }
-                }
-
-                if (matchedTokenIndex !== -1 && cleanToken.length > 0) {
+                let isMatch = wordTokens.some(wt => wt === cleanToken);
+                if (isMatch && cleanToken.length > 0) {
                     blankCounter++;
-                    resultHtml += `<span class="blank-box" id="active-blank-box-${blankCounter}" data-original="${token}">${'_'.repeat(Math.max(4, token.trim().length))}</span>`;
+                    const blankMask = token.replace(/[a-zA-Z0-9]/g, '_');
+                    resultHtml += `<span class="blank-box" id="active-blank-box-${blankCounter}" data-original="${token}">${blankMask}</span>`;
                 } else {
                     resultHtml += token;
                 }
