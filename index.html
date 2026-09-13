@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- SheetJS (Excelファイル読み込み用) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <!-- Google Fonts Inter & Noto Sans JP -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -171,6 +173,7 @@
                             <option value="30">30 語</option>
                             <option value="50">50 語</option>
                             <option value="100">100 語</option>
+                            <option value="99999">無制限</option>
                         </select>
                     </div>
                 </div>
@@ -362,13 +365,13 @@
             <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-wrap items-center justify-between gap-3">
                 <div>
                     <h3 class="text-base font-bold text-slate-900">単語データ管理 & 進捗バックアップ</h3>
-                    <p class="text-xs text-slate-500">学習記録を含む全データのバックアップ・復元・CSV取込ができます</p>
+                    <p class="text-xs text-slate-500">学習記録を含む全データのバックアップ・復元・CSV/Excel取込ができます</p>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2">
                     <button onclick="openImportModal()" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-xs">
                         <i data-lucide="upload" class="w-3.5 h-3.5"></i>
-                        <span>CSV取込</span>
+                        <span>ファイルから取込</span>
                     </button>
                     <!-- Backup & Restore Buttons -->
                     <button onclick="exportJSONBackup()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-xs" title="現在の進捗・学習履歴をすべてファイルに保存します">
@@ -394,15 +397,25 @@
 
             <!-- List Search & Table -->
             <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs space-y-4">
-                <div class="relative max-w-sm">
-                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
-                    <input type="text" id="manage-search-input" oninput="renderManageTable()" placeholder="英単語や日本語訳で検索..." class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500">
+                <div class="flex flex-wrap justify-between items-center gap-3">
+                    <div class="relative max-w-sm flex-1 min-w-[200px]">
+                        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
+                        <input type="text" id="manage-search-input" oninput="renderManageTable()" placeholder="英単語や日本語訳で検索..." class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <!-- 一括削除ボタン -->
+                    <button id="btn-delete-selected" onclick="deleteSelectedCards()" class="px-3.5 py-2 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-xs opacity-50 cursor-not-allowed" disabled>
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        <span id="btn-delete-selected-text">選択項目を削除</span>
+                    </button>
                 </div>
 
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs">
                         <thead class="bg-slate-50 text-slate-500 uppercase tracking-wider font-bold border-b border-slate-200">
                             <tr>
+                                <th class="p-3 w-10 text-center">
+                                    <input type="checkbox" id="manage-check-all" onchange="toggleAllCheckboxes(this)" class="rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                                </th>
                                 <th class="p-3">ID</th>
                                 <th class="p-3">ターゲット単語</th>
                                 <th class="p-3">問題フレーズ</th>
@@ -428,7 +441,7 @@
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
                 <div class="flex items-center space-x-2">
                     <i data-lucide="file-spreadsheet" class="w-5 h-5 text-indigo-600"></i>
-                    <h3 class="text-base font-bold text-slate-900">スプレッドシート / CSV データ取込 (厳格バリデーション付)</h3>
+                    <h3 class="text-base font-bold text-slate-900">スプレッドシート / CSV データ取込 (文字化け対応)</h3>
                 </div>
                 <button onclick="closeImportModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
                     <i data-lucide="x" class="w-5 h-5"></i>
@@ -436,7 +449,8 @@
             </div>
 
             <p class="text-xs text-slate-500">
-                Excel (.xlsx/.xls) または CSV/TSV ファイルをドロップまたはファイル選択してください。書式不正の場合は即座にエラーメッセージを表示して中止します。
+                Excel (.xlsx/.xls) または CSV/TSV ファイルをドロップまたはファイル選択してください。<br>
+                <span class="text-indigo-600">※Excelファイルは直接解析し、CSVのShift-JIS文字化けにも自動対応しています。</span>
             </p>
 
             <!-- File Drop Zone -->
@@ -446,7 +460,7 @@
                 </div>
                 <div>
                     <p class="text-xs font-bold text-slate-700 group-hover:text-indigo-600 transition">ファイルをドロップ、またはクリックしてファイル選択</p>
-                    <p class="text-[10px] text-slate-400 mt-0.5">対応形式: .xlsx, .xls, .csv, .tsv</p>
+                    <p class="text-[10px] text-slate-400 mt-0.5">対応形式: .xlsx, .xls, .csv, .tsv, .txt</p>
                 </div>
                 <input type="file" id="file-input" accept=".xlsx,.xls,.csv,.tsv,.txt" onchange="handleFileSelect(event)" class="hidden">
             </div>
@@ -1025,8 +1039,9 @@
                 const remainingSlots = Math.max(0, dailyLimit - plannedDue);
                 const plannedNew = Math.min(newCount, remainingSlots);
                 const totalPlanned = plannedDue + plannedNew;
-
-                subtitle.textContent = `予定 ${totalPlanned}語 (復習 ${plannedDue}語 + 新規 ${plannedNew}語 / 상限 ${dailyLimit}語)`;
+                
+                const limitText = dailyLimit === 99999 ? "無制限" : `${dailyLimit}語`;
+                subtitle.textContent = `予定 ${totalPlanned}語 (復習 ${plannedDue}語 + 新規 ${plannedNew}語 / 上限 ${limitText})`;
             }
         }
 
@@ -1041,6 +1056,8 @@
                 
                 const newCards = cardsDb.filter(c => c.status === 'new').slice(0, remainingSlots);
                 sessionQueue = [...targetDue, ...newCards];
+                
+                sessionQueue.sort(() => 0.5 - Math.random());
 
                 if (sessionQueue.length === 0) {
                     sessionQueue = [...cardsDb].sort(() => 0.5 - Math.random()).slice(0, Math.min(10, dailyLimit));
@@ -1056,7 +1073,6 @@
 
         // STRICT BLANK GENERATOR:
         // Replaces each distinct word token of the target word/phrase with a single underscore blank (_)
-        // while preserving spaces and hyphens as literal spaces and hyphens.
         function generateBlankPhrase(phraseEn, word) {
             if (!phraseEn || !word) return phraseEn;
 
@@ -1067,8 +1083,6 @@
             let hasMatched = false;
             let resultHtml = phraseEn.replace(regex, (match) => {
                 hasMatched = true;
-                // Split match by spaces and hyphens to replace each word token with 1 underscore
-                // But let's preserve hyphens and spaces literally.
                 let parts = match.split(/(\s+|-)/);
                 let blankHtml = '';
                 for (let p of parts) {
@@ -1083,7 +1097,6 @@
             });
 
             if (!hasMatched) {
-                // Fallback token match
                 const wordTokens = cleanWord.toLowerCase().split(/\s+/).filter(t => t.length > 0);
                 let tokens = phraseEn.match(/[\w'-]+|[^\w\s]|\s+/g) || [phraseEn];
                 resultHtml = '';
@@ -1300,7 +1313,7 @@
             });
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">該当する単語が見つかりません。</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400">該当する単語が見つかりません。</td></tr>`;
                 return;
             }
 
@@ -1318,6 +1331,9 @@
                 const chartHtml = renderHistoryBarChartHtml(card.history, true);
 
                 tr.innerHTML = `
+                    <td class="p-3 text-center">
+                        <input type="checkbox" class="manage-row-check rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer" value="${card.id}" onchange="updateDeleteSelectedButton()">
+                    </td>
                     <td class="p-3 font-bold text-indigo-600">#${card.id}</td>
                     <td class="p-3 font-bold text-slate-900">${card.word}</td>
                     <td class="p-3 text-slate-700 max-w-xs truncate" title="${card.phraseEn}">${card.phraseEn}</td>
@@ -1333,12 +1349,59 @@
                 tbody.appendChild(tr);
             });
 
+            const checkAll = document.getElementById('manage-check-all');
+            if (checkAll) checkAll.checked = false;
+            updateDeleteSelectedButton();
+
             lucide.createIcons();
         }
 
         function deleteCard(id) {
             if (confirm(`単語 ID #${id} を削除しますか？`)) {
                 cardsDb = cardsDb.filter(c => c.id !== id);
+                saveDatabase();
+                renderManageTable();
+            }
+        }
+
+        function toggleAllCheckboxes(source) {
+            const checkboxes = document.querySelectorAll('.manage-row-check');
+            checkboxes.forEach(cb => {
+                cb.checked = source.checked;
+            });
+            updateDeleteSelectedButton();
+        }
+
+        function updateDeleteSelectedButton() {
+            const checkboxes = document.querySelectorAll('.manage-row-check:checked');
+            const btn = document.getElementById('btn-delete-selected');
+            const btnText = document.getElementById('btn-delete-selected-text');
+            const checkAll = document.getElementById('manage-check-all');
+            
+            if (checkboxes.length > 0) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                btnText.textContent = `${checkboxes.length}件の選択項目を削除`;
+            } else {
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+                btnText.textContent = `選択項目を削除`;
+                if (checkAll) checkAll.checked = false;
+            }
+            
+            const allCheckboxes = document.querySelectorAll('.manage-row-check');
+            if (checkAll && allCheckboxes.length > 0) {
+                checkAll.checked = allCheckboxes.length === checkboxes.length;
+            }
+        }
+
+        function deleteSelectedCards() {
+            const checkboxes = document.querySelectorAll('.manage-row-check:checked');
+            if (checkboxes.length === 0) return;
+            
+            if (confirm(`選択した ${checkboxes.length} 件の単語データをまとめて削除しますか？\n（この操作は元に戻せません）`)) {
+                const idsToDelete = Array.from(checkboxes).map(cb => parseInt(cb.value, 10));
+                cardsDb = cardsDb.filter(c => !idsToDelete.includes(c.id));
                 saveDatabase();
                 renderManageTable();
             }
@@ -1410,51 +1473,74 @@
         function readFile(file) {
             if (!file) return;
             const reader = new FileReader();
+            
             reader.onload = function(e) {
                 const buffer = e.target.result;
+                const fileName = file.name.toLowerCase();
+                const isExcel = fileName.endsWith('.xlsx') || fileName.endsWith('.xls');
 
-                try {
-                    const workbook = XLSX.read(buffer, { type: 'array' });
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
-                    let rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: false });
-
-                    if (rows && rows.length > 0) {
-                        if (rows.length > 1) {
-                            const firstRowStr = rows[0].join(' ').toLowerCase();
-                            if (firstRowStr.includes('通し番') || firstRowStr.includes('id') || firstRowStr.includes('word') || firstRowStr.includes('単語') || firstRowStr.includes('和訳')) {
-                                rows = rows.slice(1);
-                            }
+                // Excelファイルの場合はSheetJSを使って直接解析する
+                if (isExcel) {
+                    try {
+                        if (typeof XLSX === 'undefined') {
+                            alert("Excel解析ライブラリが読み込まれていません。ネットワーク環境を確認してください。");
+                            return;
                         }
 
-                        const formattedText = rows
-                            .filter(r => r && r.length > 0 && r.some(cell => cell !== null && cell !== undefined && String(cell).trim() !== ''))
-                            .map(row => row.map(cell => (cell !== null && cell !== undefined ? String(cell).replace(/\r?\n|\r|\t/g, ' ') : '')).join('\t'))
-                            .join('\n');
+                        const workbook = XLSX.read(buffer, { type: 'array' });
+                        const firstSheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+                        let rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: false });
 
-                        document.getElementById('import-textarea').value = formattedText;
-                        document.getElementById('file-info-name').textContent = `📄 ${file.name} (${Math.round(file.size / 1024)} KB / Excel自動変換済)`;
-                        document.getElementById('file-info-bar').classList.remove('hidden');
+                        if (rows && rows.length > 0) {
+                            // ヘッダー行があればスキップ
+                            if (rows.length > 1) {
+                                const firstRowStr = rows[0].join(' ').toLowerCase();
+                                if (firstRowStr.includes('通し番') || firstRowStr.includes('id') || firstRowStr.includes('word') || firstRowStr.includes('単語') || firstRowStr.includes('和訳')) {
+                                    rows = rows.slice(1);
+                                }
+                            }
+
+                            // SheetJSで取り出した配列をTSV形式のテキストとして組み立てる
+                            const formattedText = rows
+                                .filter(r => r && r.length > 0 && r.some(cell => cell !== null && cell !== undefined && String(cell).trim() !== ''))
+                                .map(row => row.map(cell => (cell !== null && cell !== undefined ? String(cell).replace(/\r?\n|\r|\t/g, ' ') : '')).join('\t'))
+                                .join('\n');
+
+                            document.getElementById('import-textarea').value = formattedText;
+                            document.getElementById('file-info-name').textContent = `📄 ${file.name} (${Math.round(file.size / 1024)} KB / Excel自動抽出済)`;
+                            document.getElementById('file-info-bar').classList.remove('hidden');
+                            return;
+                        } else {
+                             alert("Excelファイル内にデータが見つかりません。");
+                             return;
+                        }
+                    } catch (xlsxErr) {
+                        console.error("Excel解析エラー:", xlsxErr);
+                        alert("Excelファイルの読み込みに失敗しました。ファイルが破損していないか確認してください。");
                         return;
                     }
-                } catch (xlsxErr) {
-                    console.warn("SheetJS parse skipped or failed:", xlsxErr);
                 }
 
+                // --- ここから下はCSV / TSV / TXT のテキストファイル用処理 ---
                 let text = "";
                 try {
+                    // 基本は UTF-8 でデコード
                     const utf8Decoder = new TextDecoder('utf-8', { fatal: true });
                     text = utf8Decoder.decode(buffer);
                 } catch (err) {
                     try {
-                        const sjisDecoder = new TextDecoder('shift-jis');
+                        // UTF-8で失敗した場合(文字化けする場合)は、日本のExcel出力に多い Shift-JIS としてデコード
+                        const sjisDecoder = new TextDecoder('shift-jis', { fatal: true });
                         text = sjisDecoder.decode(buffer);
                     } catch (sjisErr) {
+                        // それでもダメな場合の最終フォールバック
                         const fallbackDecoder = new TextDecoder('utf-8');
                         text = fallbackDecoder.decode(buffer);
                     }
                 }
 
+                // BOM (Byte Order Mark) が先頭にあれば削除
                 if (text.startsWith('\uFEFF')) {
                     text = text.slice(1);
                 }
@@ -1463,6 +1549,8 @@
                 document.getElementById('file-info-name').textContent = `📄 ${file.name} (${Math.round(file.size / 1024)} KB)`;
                 document.getElementById('file-info-bar').classList.remove('hidden');
             };
+            
+            // Excelバイナリ解析・文字コード判定の両方に対応するため、ArrayBufferとして読み込む
             reader.readAsArrayBuffer(file);
         }
 
